@@ -1,0 +1,106 @@
+﻿.mainContainer {
+    text-align: center;
+    display: grid;
+    width: 100%;
+    height: 100%;
+    background-color: powderblue;
+    grid-template-columns: auto auto;
+    grid-template-rows: 1fr 10fr 1fr;
+    grid-template-areas: "header header" "mainView mainView" "footer footer";
+    background: #2B4B6F;
+}
+
+.mainView{
+    grid-area: mainView;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-areas: "logIn register";
+}
+
+.logIn {
+    grid-area: logIn;
+    background: #2B4B6F;
+    color: #6587AD;
+    align-self: center;
+}
+
+.register {
+    grid-area: register;
+    background: #2B4B6F;
+    color: #6587AD;
+    align-self: center;
+}
+
+.header {
+    grid-area: header;
+    background: #6587AD;
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto auto;
+    grid-template-areas: "view edit change create changeR createR logout";
+}
+
+.footer {
+    grid-area: footer;
+    background: #6587AD;
+}
+
+button {
+    background: #0A1D33;
+    color: #6587AD;
+}
+
+    button:hover {
+        background-color: gray;
+    }
+
+#korImeVal{
+    display: none;
+}
+
+.Prijavljen{
+    display:none;
+}
+ul {
+    background: #6587AD;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    align-self: stretch;
+}
+
+li{
+    float: left;
+}
+
+li:hover {
+    background: #2B4B6F;
+}
+
+#view{
+    grid-area:view;
+}
+
+#edit{
+    grid-area: edit;
+}
+
+#change{
+    grid-area:change;
+}
+
+#kreirajVozaca{
+    grid-area: create;
+}
+
+#promeniVoznje{
+    grid-area: changeR;
+}
+
+#formirajVoznju{
+    grid-area: createR;
+}
+
+#logout{
+    grid-area: logout;
+}

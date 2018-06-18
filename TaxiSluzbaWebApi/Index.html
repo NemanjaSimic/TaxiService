@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" media="screen" href="Content/indexStyle.css" />
+    <script src="Scripts/jquery-1.10.2.js"></script>
+    <script src="Scripts/logIn.js"></script>
+   
+    <title></title>
+</head>
+<body>
+    <div class="mainContainer">
+        <header class="header">
+            
+          
+        </header>
+        <div class="mainView">
+            <aside class="logIn">
+                <h3>Prijava korisnika</h3>
+                <label id="korImeVal">Pogresna kombinacija korisnickog imena i sifre!</label><br />
+                <input type="text" placeholder="Username" id="username" autocomplete="off" />
+                <br />
+                <input type="password" placeholder="Password" id="password" autocomplete="off" />
+                <br />
+                <button id="buttonPrijava">Prijavi se</button>
+            </aside>
+
+            <aside class="register">
+                <h3>Registracija nove musterije</h3>
+                <input type="text" name="ime" placeholder="Ime" autocomplete="off" /><br />
+                <input type="text" name="prezime" placeholder="Prezime" autocomplete="off" /><br />
+                <input type="text" name="jmbg" placeholder="JMBG" autocomplete="off" /><br />
+                <label>Pol:</label>
+                <select name="pol">
+                    <option>M</option>
+                    <option>Z</option>
+                </select><br />
+                <input type="text" name="korisnickoIme" placeholder="Korisnicko ime" autocomplete="off" /><br />
+                <input type="text" name="sifra" placeholder="Sifra" autocomplete="off" /><br />
+                <input type="text" name="sifraPotvrda" placeholder="Potvrda sifre" autocomplete="off" /><br />
+                <input type="text" name="email" placeholder="Email adresa" autocomplete="off" /><br />
+                <input type="text" name="brojTelefona" placeholder="Kontakt telefon" autocomplete="off" /><br />
+                <label>Uloga:</label>
+                <select name="uloga">
+                    <option>Musterija</option>
+                </select><br />
+                <button name="buttonRegistracija">Registruj se</button>
+            </aside>
+        </div>
+        <footer class="footer">
+            <h2>Footer</h2>
+        </footer>
+    </div>
+</body>
+</html>
