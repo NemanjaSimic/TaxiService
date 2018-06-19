@@ -6,46 +6,48 @@
     <link rel="stylesheet" type="text/css" media="screen" href="Content/indexStyle.css" />
     <script src="Scripts/jquery-1.10.2.js"></script>
     <script src="Scripts/logIn.js"></script>
-   
+    <script src="Scripts/singUp.js"></script>
+    <script src="Scripts/account.js"></script>
     <title></title>
 </head>
 <body>
     <div class="mainContainer">
         <header class="header">
             
-          
+           
         </header>
         <div class="mainView">
             <aside class="logIn">
                 <h3>Prijava korisnika</h3>
-                <label id="korImeVal">Pogresna kombinacija korisnickog imena i sifre!</label><br />
-                <input type="text" placeholder="Username" id="username" autocomplete="off" />
+                <input type="text" placeholder="Username" id="username" class="logInPolje" autocomplete="off" />
                 <br />
-                <input type="password" placeholder="Password" id="password" autocomplete="off" />
+                <input type="password" placeholder="Password" id="password" class="logInPolje" autocomplete="off" />
                 <br />
-                <button id="buttonPrijava">Prijavi se</button>
+                <button id="buttonPrijava">Prijavi se</button><br />
+                <label id="korImeVal" class="error">Pogresna kombinacija korisnickog imena i sifre!</label>
             </aside>
 
             <aside class="register">
                 <h3>Registracija nove musterije</h3>
-                <input type="text" name="ime" placeholder="Ime" autocomplete="off" /><br />
-                <input type="text" name="prezime" placeholder="Prezime" autocomplete="off" /><br />
-                <input type="text" name="jmbg" placeholder="JMBG" autocomplete="off" /><br />
+                <input type="text" id="ime" placeholder="Ime" autocomplete="off" /><br />
+                <input type="text" id="prezime" placeholder="Prezime" autocomplete="off" /><br />
+                <input type="text" id="jmbg" placeholder="JMBG" autocomplete="off" /><br />
                 <label>Pol:</label>
-                <select name="pol">
-                    <option>M</option>
-                    <option>Z</option>
+                <select id="pol">
+                    <option value="0">Muski</option>
+                    <option value="1">Zesnki</option>
                 </select><br />
-                <input type="text" name="korisnickoIme" placeholder="Korisnicko ime" autocomplete="off" /><br />
-                <input type="text" name="sifra" placeholder="Sifra" autocomplete="off" /><br />
-                <input type="text" name="sifraPotvrda" placeholder="Potvrda sifre" autocomplete="off" /><br />
-                <input type="text" name="email" placeholder="Email adresa" autocomplete="off" /><br />
-                <input type="text" name="brojTelefona" placeholder="Kontakt telefon" autocomplete="off" /><br />
+                <input type="text" id="korisnickoIme" placeholder="Korisnicko ime" autocomplete="off" /><br />
+                <input type="password" id="sifra" placeholder="Sifra" autocomplete="off" /><br />
+                <input type="password" id="sifraPotvrda" placeholder="Potvrda sifre" autocomplete="off" /><br />
+                <input type="text" id="email" placeholder="Email adresa" autocomplete="off" /><br />
+                <input type="text" id="brojTelefona" placeholder="Kontakt telefon" autocomplete="off" /><br />
                 <label>Uloga:</label>
-                <select name="uloga">
+                <select id="uloga">
                     <option>Musterija</option>
                 </select><br />
-                <button name="buttonRegistracija">Registruj se</button>
+                <button name="buttonRegistracija" id="buttonSingUp">Registruj se</button>
+                <div id="regVal"></div>
             </aside>
         </div>
         <footer class="footer">

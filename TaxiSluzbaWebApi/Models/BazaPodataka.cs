@@ -32,7 +32,7 @@ namespace TaxiSluzbaWebApi.Models
 
         private void UcitajDispecere()
         {
-            using (TextReader tr = new StreamReader(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiSluzbaWebApi\App_Data\Dispeceri.txt"))
+            using (TextReader tr = new StreamReader(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\App_Data\Dispeceri.txt"))
             {
                 Dispecer dispecer = null;
                 string informacije = string.Empty;
@@ -57,7 +57,7 @@ namespace TaxiSluzbaWebApi.Models
 
         private void UcitajMusterije()
         {
-            using (TextReader tr = new StreamReader(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiSluzbaWebApi\App_Data\Musterije.txt"))
+            using (TextReader tr = new StreamReader(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\App_Data\Musterije.txt"))
             {
                 Musterija musterija = null;
                 string informacije = string.Empty;
@@ -82,7 +82,7 @@ namespace TaxiSluzbaWebApi.Models
 
         private void UcitajVozace()
         {
-            using (TextReader tr = new StreamReader(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiSluzbaWebApi\App_Data\Vozaci.txt"))
+            using (TextReader tr = new StreamReader(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\App_Data\Vozaci.txt"))
             {
                 Vozac vozac = null;
                 string informacije = string.Empty;
@@ -110,6 +110,105 @@ namespace TaxiSluzbaWebApi.Models
             UcitajDispecere();
             UcitajMusterije();
             UcitajVozace();
+        }
+
+        public void UpisiUBazuMusterije()
+        {
+            try
+            {
+                using (TextWriter tw = new StreamWriter(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\App_Data\Musterije.txt"))
+                {
+                    foreach (var item in Musterije)
+                    {
+                        tw.Write(item.KorisnickoIme);
+                        tw.Write(";");
+                        tw.Write(item.Sifra);
+                        tw.Write(";");
+                        tw.Write(item.Ime);
+                        tw.Write(";");
+                        tw.Write(item.Prezime);
+                        tw.Write(";");
+                        tw.Write(item.Pol);
+                        tw.Write(";");
+                        tw.Write(item.JMBG);
+                        tw.Write(";");
+                        tw.Write(item.KontaktTelefon);
+                        tw.Write(";");
+                        tw.Write(item.Email);
+                        tw.Write("\n");
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        public void UpisiUBazuDispecere()
+        {
+            try
+            {
+                using (TextWriter tw = new StreamWriter(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\App_Data\Dispeceri.txt"))
+                {
+                    foreach (var item in Dispeceri)
+                    {
+                        tw.Write(item.KorisnickoIme);
+                        tw.Write(";");
+                        tw.Write(item.Sifra);
+                        tw.Write(";");
+                        tw.Write(item.Ime);
+                        tw.Write(";");
+                        tw.Write(item.Prezime);
+                        tw.Write(";");
+                        tw.Write(item.Pol);
+                        tw.Write(";");
+                        tw.Write(item.JMBG);
+                        tw.Write(";");
+                        tw.Write(item.KontaktTelefon);
+                        tw.Write(";");
+                        tw.Write(item.Email);
+                        tw.Write("\n");
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        public void UpisiUBazuVozace()
+        {
+            try
+            {
+                using (TextWriter tw = new StreamWriter(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\App_Data\Vozaci.txt"))
+                {
+                    foreach (var item in Vozaci)
+                    {
+                        tw.Write(item.KorisnickoIme);
+                        tw.Write(";");
+                        tw.Write(item.Sifra);
+                        tw.Write(";");
+                        tw.Write(item.Ime);
+                        tw.Write(";");
+                        tw.Write(item.Prezime);
+                        tw.Write(";");
+                        tw.Write(item.Pol);
+                        tw.Write(";");
+                        tw.Write(item.JMBG);
+                        tw.Write(";");
+                        tw.Write(item.KontaktTelefon);
+                        tw.Write(";");
+                        tw.Write(item.Email);
+                        tw.Write("\n");
+                    }
+                }
+            }
+            catch
+            {
+
+            }
         }
     }
 }
