@@ -11,6 +11,7 @@ namespace TaxiSluzbaWebApi.Models
         public List<Dispecer> Dispeceri { get; set; }
         public List<Musterija> Musterije { get; set; }
         public List<Vozac> Vozaci { get; set; }
+        public List<Voznja> Voznje { get; set; }
         private static BazaPodataka instanca;
         private BazaPodataka()
         {
@@ -135,7 +136,10 @@ namespace TaxiSluzbaWebApi.Models
                         tw.Write(item.KontaktTelefon);
                         tw.Write(";");
                         tw.Write(item.Email);
-                        tw.Write("\n");
+                        if(Musterije.IndexOf(item) != Musterije.Count() - 1)
+                        {
+                            tw.Write("\n");
+                        }
                     }
                 }
             }
@@ -168,7 +172,10 @@ namespace TaxiSluzbaWebApi.Models
                         tw.Write(item.KontaktTelefon);
                         tw.Write(";");
                         tw.Write(item.Email);
-                        tw.Write("\n");
+                        if (Dispeceri.IndexOf(item) != Dispeceri.Count() - 1)
+                        {
+                            tw.Write("\n");
+                        }
                     }
                 }
             }
@@ -201,7 +208,10 @@ namespace TaxiSluzbaWebApi.Models
                         tw.Write(item.KontaktTelefon);
                         tw.Write(";");
                         tw.Write(item.Email);
-                        tw.Write("\n");
+                        if (Vozaci.IndexOf(item) != Vozaci.Count() - 1)
+                        {
+                            tw.Write("\n");
+                        }
                     }
                 }
             }

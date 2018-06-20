@@ -15,8 +15,6 @@ namespace TaxiSluzbaWebApi.Controllers
     [System.Web.Http.RoutePrefix("api/Korisnik")]
     public class KorisnikController : ApiController
     {
-
-        ///api/Korisnik/LogIn
         [System.Web.Http.Route("LogIn")]
         public HttpResponseMessage LogIn([FromBody]JToken jToken)
         {
@@ -93,6 +91,20 @@ namespace TaxiSluzbaWebApi.Controllers
                     return Request.CreateResponse(HttpStatusCode.Conflict);
                 }
             }
+            foreach (var item in BazaPodataka.Instanca.Dispeceri)
+            {
+                if (musterija.KorisnickoIme.Equals(item.KorisnickoIme))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Conflict);
+                }
+            }
+            foreach (var item in BazaPodataka.Instanca.Vozaci)
+            {
+                if (musterija.KorisnickoIme.Equals(item.KorisnickoIme))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Conflict);
+                }
+            }
 
             BazaPodataka.Instanca.Musterije.Add(musterija);
             BazaPodataka.Instanca.UpisiUBazuMusterije();
@@ -142,7 +154,7 @@ namespace TaxiSluzbaWebApi.Controllers
             {
                 if (istoKorIme && musterija.KorisnickoIme.Equals(item.KorisnickoIme))
                 {
-                    tempM = item;
+                    tempM = item;                 
                 }
                 else if (!istoKorIme && musterija.KorisnickoIme.Equals(item.KorisnickoIme))
                 {
@@ -192,7 +204,16 @@ namespace TaxiSluzbaWebApi.Controllers
                     }
                     else
                     {
-                        BazaPodataka.Instanca.Vozaci.Remove(tempV);
+                        try
+                        {
+
+                            BazaPodataka.Instanca.Vozaci.Remove(tempV);
+                        }
+                        catch (Exception)
+                        {
+
+                            
+                        }
                         tempV.KorisnickoIme = musterija.KorisnickoIme;
                         tempV.Ime = musterija.Ime;
                         tempV.Prezime = musterija.Prezime;
@@ -206,7 +227,15 @@ namespace TaxiSluzbaWebApi.Controllers
                 }
                 else
                 {
-                    BazaPodataka.Instanca.Dispeceri.Remove(tempD);
+                    try
+                    {
+                        BazaPodataka.Instanca.Dispeceri.Remove(tempD);               
+                    }
+                    catch (Exception)
+                    {
+
+                        
+                    }
                     tempD.KorisnickoIme = musterija.KorisnickoIme;
                     tempD.Ime = musterija.Ime;
                     tempD.Prezime = musterija.Prezime;
@@ -220,11 +249,110 @@ namespace TaxiSluzbaWebApi.Controllers
             }
             else
             {
+                try
+                {
                     BazaPodataka.Instanca.Musterije.Remove(tempM);
+                }
+                catch (Exception)
+                {
+
+                    
+                }
                     musterija.Sifra = tempM.Sifra;
                     BazaPodataka.Instanca.Musterije.Add(musterija);
-                BazaPodataka.Instanca.UpisiUBazuMusterije();
+                    BazaPodataka.Instanca.UpisiUBazuMusterije();
+
                 return Request.CreateResponse(HttpStatusCode.OK,musterija);
+            }
+        }
+
+        [System.Web.Http.Route("ChangePass")]
+        public HttpResponseMessage ChangePass([FromBody]Musterija m)
+        {
+            Musterija tempM = null;
+            Vozac tempV = null;
+            Dispecer tempD = null;
+            foreach (var item in BazaPodataka.Instanca.Musterije)
+            {
+                if (m.KorisnickoIme.Equals(item.KorisnickoIme))
+                {
+                    tempM = item;
+                }
+            }
+            if(tempM == null)
+            {
+                foreach (var item in BazaPodataka.Instanca.Dispeceri)
+                {
+                    if (m.KorisnickoIme.Equals(item.KorisnickoIme))
+                    {
+                        tempD = item;
+                    }
+                }
+                if(tempD == null)
+                {
+                    foreach (var item in BazaPodataka.Instanca.Vozaci)
+                    {
+                        if (m.KorisnickoIme.Equals(item.KorisnickoIme))
+                        {
+                            tempV = item;
+                        }
+                    }
+                    if(tempV == null)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest);
+                    }
+                    else
+                    {
+                        try
+                        {
+                        BazaPodataka.Instanca.Vozaci.Remove(tempV);
+
+                        }
+                        catch (Exception)
+                        {
+
+                            
+                        }
+                        tempV.Sifra = m.Sifra;
+                        BazaPodataka.Instanca.Vozaci.Add(tempV);
+                        BazaPodataka.Instanca.UpisiUBazuVozace();
+                        return Request.CreateResponse(HttpStatusCode.OK,m);
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                    BazaPodataka.Instanca.Dispeceri.Remove(tempD);
+
+                    }
+                    catch (Exception)
+                    {
+
+                        
+                    }
+                    tempD.Sifra = m.Sifra;
+                    BazaPodataka.Instanca.Dispeceri.Add(tempD);
+                    BazaPodataka.Instanca.UpisiUBazuDispecere();
+                    return Request.CreateResponse(HttpStatusCode.OK,m);
+                }
+            }
+            else
+            {
+                try
+                {
+                BazaPodataka.Instanca.Musterije.Remove(tempM);
+
+                }
+                catch (Exception)
+                {
+
+                    
+                }
+                tempM.Sifra = m.Sifra;
+                BazaPodataka.Instanca.Musterije.Add(tempM);
+                BazaPodataka.Instanca.UpisiUBazuMusterije();
+                return Request.CreateResponse(HttpStatusCode.OK,m);
             }
         }
     }

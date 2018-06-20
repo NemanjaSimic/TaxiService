@@ -1,5 +1,4 @@
-﻿
-$(document).on('click', '#view', function () {
+﻿$(document).on('click', '#view', function () {
     $('.mainView').html("");
     var korisnikJSON = sessionStorage.getItem('korisnik');
     korisnik = $.parseJSON(korisnikJSON);
@@ -20,7 +19,7 @@ $(document).on('click', '#edit', function () {
     informations += `<tr><td>Prezime:</td><td><input type="text" value="${korisnik.Prezime}" id="prezimeEdit" /></td></tr>`;
     informations += `<tr><td>JMBG:</td><td><input type="text" value="${korisnik.JMBG}" id="jmbgEdit" /></td></tr>`;
     informations += `<tr><td>Korisnicko ime:</td><td><input type="text" value="${korisnik.KorisnickoIme}" id="korisnickoImeEdit" /></td></tr>`;
-    informations += `<tr><td>Email:</td><td><input type="text" value="${korisnik.Email}" id="emailEdit" /></td></tr>`;
+    informations += `<tr><td>Email:</td><td><input type="email" value="${korisnik.Email}" id="emailEdit" /></td></tr>`;
     informations += `<tr><td>Broj telefona:</td><td><input type="text" value="${korisnik.KontaktTelefon}" id="brojTelefonaEdit" /></td></tr>`;
     informations += '<tr><td></td><td><button id="buttonEdit">Sacuvaj izmene</button></td></tr></table>';
     informations += '<div id="regValEdit"></div>';
@@ -33,7 +32,7 @@ $(document).on('click', '#logout', function () {
 
 });
 
-$(document).on('click', '#buttonEdit', function () {
+$(document).off('click', '#buttonEdit').on('click', '#buttonEdit', function () {
 
     var retVal = true;
     $('#regValEdit').html("");
@@ -88,7 +87,7 @@ $(document).on('click', '#buttonEdit', function () {
             $('#regValEdit').append('<label>Polje broj telefona mora imati od 8 do 10 cifara!</label><br/>');
         }
     }
-
+/////////////////////////////////////////////////////////////////
     if (retVal) {
         var korisnikJSON = sessionStorage.getItem('korisnik');
         korisnik = $.parseJSON(korisnikJSON);
@@ -110,7 +109,7 @@ $(document).on('click', '#buttonEdit', function () {
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             success: function (data) {            
-                    $('#regValEdit').append('<label>Korisnik uspesno registrovan!</label><br/>');
+                    $('#regValEdit').append('<label>Uspesno sacuvane promene!</label><br/>');
                     sessionStorage.setItem('korisnik', JSON.stringify(data));
             },
             error: function (data) {
@@ -119,5 +118,70 @@ $(document).on('click', '#buttonEdit', function () {
                 }
             }
         });
+        return false;
     }
+});
+
+$(document).on('click', '#change', function () {
+    $('.mainView').html("");
+    let informations = '<table><tr><td>Unesite sifru:</td><td><input type="password" id="sifraAut" /></td></tr>';
+    informations += '<tr><td>Unesite novu sifru:</td><td><input type="password" id="sifraNova" /></td></tr>';
+    informations += '<tr><td>Unesite ponovite novu sifru:</td><td><input type="password" id="sifraNovaP" /></td></tr>';
+    informations += '<tr><td></td><td><button id="promeniSifru">Promeni sifru</ button></td></tr></table>';
+    informations += '<div id="regValEditS"></div>';
+    $('.mainView').html(informations);
+});
+
+$(document).off('click','#promeniSifru').on('click', '#promeniSifru', function () {
+    $('#regValEditS').html("");
+
+    var korisnikJSON = sessionStorage.getItem('korisnik');
+    korisnik = $.parseJSON(korisnikJSON);
+    var retVal = true;
+
+    if ($('#sifraAut').val() === "") {
+        retVal = false;
+        $('#regValEditS').append('<label>Polje za sifru ne sme biti prazno!</label><br/>');
+    } else if ($('#sifraAut').val() !== korisnik.Sifra) {
+            retVal = false;
+            $('#regValEditS').append('<label>Sifra nije ispravna!</label><br/>');
+    }
+    
+
+    if ($('#sifraNova').val() === "") {
+        retVal = false;
+        $('#regValEditS').append('<label>Polje za novu sifru ne sme biti prazno!</label><br/>');
+    }
+
+    if ($('#sifraNova').val() !== $('#sifraNovaP').val()) {
+        retVal = false;
+        $('#regValEditS').append('<label>Nova sifra se ne poklapa sa ponovljenom!</label><br/>');
+    }
+
+    if ($('#sifraNova').val() === $('#sifraAut').val()) {
+        retVal = false;
+        $('#regValEditS').append('<label>Nova sifra se poklapa sa starom!</label><br/>');
+    }
+    
+
+    if (retVal) {
+        korisnik.Sifra = `${$('#sifraNova').val()}`;
+        sessionStorage.setItem('korisnik', JSON.stringify(korisnik));
+        $.ajax({
+            type: 'POST',
+            url: '/api/Korisnik/ChangePass',
+            data: JSON.stringify(korisnik),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function (data) {
+                $('#regValEditS').append('<label>Sifra uspesno promenjena!</label><br/>');
+                sessionStorage.setItem('korisnik', JSON.stringify(data));
+            },
+            error: function (data) {            
+                    $('#regValEditS').append('<label>Neko je cackao skriptu!</label><br/>');              
+            }
+        });
+        return true;
+    }
+
 });

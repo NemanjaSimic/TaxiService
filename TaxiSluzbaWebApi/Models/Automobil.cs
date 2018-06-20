@@ -7,10 +7,10 @@ namespace TaxiSluzbaWebApi.Models
 {
     public class Automobil
     {
-        public Vozac Vozac { get; set; }
-        public UInt32 Godiste { get; set; }
-        public UInt32 BrojRegistarskeOznake { get; set; }
-        public UInt32 BrojTaksiVozila { get; set; }
+        public String Vozac { get; set; }
+        public String Godiste { get; set; }
+        public String BrojRegistarskeOznake { get; set; }
+        public String BrojTaksiVozila { get; set; }
         public Enum.TipAutomobila TipAutomobila { get; set; }
 
     }

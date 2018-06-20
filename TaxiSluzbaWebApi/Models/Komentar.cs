@@ -9,8 +9,8 @@ namespace TaxiSluzbaWebApi.Models
     {
         public string Opis { get; set; }
         public DateTime DatumObjave { get; set; }
-        public User Korisnik { get; set; }
+        public String Korisnik { get; set; }
         public Voznja Voznja { get; set; }
-        public int Cena { get; set; }
+        public int Ocena { get; set; }
     }
 }

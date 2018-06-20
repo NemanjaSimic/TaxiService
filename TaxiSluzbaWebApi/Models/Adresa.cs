@@ -8,9 +8,9 @@ namespace TaxiSluzbaWebApi.Models
     public class Adresa
     {
         public string Ulica { get; set; }
-        public UInt32 Broj { get; set; }
+        public String Broj { get; set; }
         public string NasenjenoMesto { get; set; }
-        public UInt32 PozivniBroj { get; set; }
+        public String PozivniBroj { get; set; }
 
     }
 }
