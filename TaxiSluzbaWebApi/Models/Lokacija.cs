@@ -10,5 +10,9 @@ namespace TaxiSluzbaWebApi.Models
         public double X { get; set; }
         public double Y { get; set; }
         public Adresa Adresa { get; set; }
+        public Lokacija()
+        {
+            Adresa = new Adresa();
+        }
     }
 }

@@ -53,10 +53,6 @@ button {
         background-color: gray;
     }
 
-.error{
-    display: none;
-}
-
 .Prijavljen{
     display:none;
 }
@@ -75,6 +71,14 @@ li{
 
 li:hover {
     background: #2B4B6F;
+}
+
+#username {
+    border-color: #6587AD;
+}
+
+#password {
+    border-color: #6587AD;
 }
 
 #view{

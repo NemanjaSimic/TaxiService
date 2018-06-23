@@ -10,14 +10,14 @@
     form += '<input type="password" id="sifraPotvrda" placeholder="Potvrda sifre" autocomplete="off" /> <br />';
     form += '<input type="email" id="email" placeholder="Email adresa" autocomplete="off" /> <br />';
     form += '<input type="text" id="brojTelefona" placeholder="Kontakt telefon" autocomplete="off" /> <br />';
-    form += '<input type="text" id="godisteAutomobila" placeholder="Godiste vozila" autocomplete="off" /> <br />';
-    form += '<input type="text" id="registracijaAutomobila" placeholder="Registarska oznaka vozila" autocomplete="off" /> <br />';
-    form += '<input type="text" id="idTaxi" placeholder="ID taxi vozila" autocomplete="off" /> <br />';
-    form += '<select id="tip"><option value="1">Putnicki</option><option value="1">Kombi</option></select><br />';
-    form += '<input type="text" id="ulica" placeholder="Ulica" autocomplete="off" /> <br />';
-    form += '<input type="text" id="brojKuce" placeholder="Broj kuce" autocomplete="off" /> <br />';
-    form += '<input type="text" id="mesto" placeholder="Naseljeno mesto" autocomplete="off" /> <br />';
-    form += '<input type="text" id="pozivniBroj" placeholder="Pozivni broj" autocomplete="off" /> <br />';
+    //form += '<input type="text" id="godisteAutomobila" placeholder="Godiste vozila" autocomplete="off" /> <br />';
+    //form += '<input type="text" id="registracijaAutomobila" placeholder="Registarska oznaka vozila" autocomplete="off" /> <br />';
+    //form += '<input type="text" id="idTaxi" placeholder="ID taxi vozila" autocomplete="off" /> <br />';
+    //form += '<select id="tip"><option value="1">Putnicki</option><option value="2">Kombi</option></select><br />';
+    //form += '<input type="text" id="ulica" placeholder="Ulica" autocomplete="off" /> <br />';
+    //form += '<input type="text" id="brojKuce" placeholder="Broj kuce" autocomplete="off" /> <br />';
+    //form += '<input type="text" id="mesto" placeholder="Naseljeno mesto" autocomplete="off" /> <br />';
+    //form += '<input type="text" id="pozivniBroj" placeholder="Postasnki broj" autocomplete="off" /> <br />';
     form += '<button id="buttonRegistracijaVozaca">Registruj se</button>';
     form += '<div id="regVal"></div></div>';
     $('.mainView').html(form);
@@ -111,52 +111,144 @@ $(document).off('click', '#buttonRegistracijaVozaca').on('click', '#buttonRegist
         }
     }
 
-    if ($('#godisteAutomobila').val() === "") {
-        retVal = false;
-        $('#regVal').append('<label>Polje godiste automobila je obavezno!</label><br/>');
-    } else if ($('#godisteAutomobila').val() > 2018 || $('#godisteAutomobila').val() < 1950) {
-        retVal = false;
-        $('#regVal').append('<label>Polje godiste automobila mora biti u opsegu izmedju 1950 i 2018!</label><br/>');
-    } else {
-        let godisteinput = $('#godisteAutomobila').val();
-        let pattern = /^\b\d{4}\b$/i;
+    //if ($('#godisteAutomobila').val() === "") {
+    //    retVal = false;
+    //    $('#regVal').append('<label>Polje godiste automobila je obavezno!</label><br/>');
+    //} else if ($('#godisteAutomobila').val() > 2018 || $('#godisteAutomobila').val() < 1950) {
+    //    retVal = false;
+    //    $('#regVal').append('<label>Polje godiste automobila mora biti u opsegu izmedju 1950 i 2018!</label><br/>');
+    //} else {
+    //    let godisteinput = $('#godisteAutomobila').val();
+    //    let pattern = /^\b\d{4}\b$/i;
 
-        if (!pattern.test(godisteinput)) {
-            retVal = false;
-            $('#regVal').append('<label>Polje godiste nije u ispravnom formatu!</label><br/>');
-        }
+    //    if (!pattern.test(godisteinput)) {
+    //        retVal = false;
+    //        $('#regVal').append('<label>Polje godiste nije u ispravnom formatu!</label><br/>');
+    //    }
+    //}
+
+    //if ($('#registracijaAutomobila').val() === "") {
+    //    retVal = false;
+    //    $('#regVal').append('<label>Polje registracija automobila je obavezno!</label><br/>');
+    //} else {
+    //    let input = $('#registracijaAutomobila').val();
+    //    let pattern = /^\b\d{6,8}\b$/i;
+
+    //    if (!pattern.test(input)) {
+    //        retVal = false;
+    //        $('#regVal').append('<label>Polje registracija mora sadrzati od 6 do 8 brojeva!</label><br/>');
+    //    }
+    //}
+
+    //if ($('#idTaxi').val() === "") {
+    //    retVal = false;
+    //    $('#regVal').append('<label>Polje ID vozila automobila je obavezno!</label><br/>');
+    //} else {
+    //    let input = $('#idTaxi').val();
+    //    let pattern = /^\b\d{4}\b$/i;
+
+    //    if (!pattern.test(input)) {
+    //        retVal = false;
+    //        $('#regVal').append('<label>Polje ID vozila mora sadrzati 4 brojeva!</label><br/>');
+    //    }
+    //}
+
+    //if ($('#ulica').val() === "") {
+    //    retVal = false;
+    //    $('#regVal').append('<label>Polje ulica je obavezno!</label><br/>');
+    //} 
+
+    //if ($('#brojKuce').val() === "") {
+    //    retVal = false;
+    //    $('#regVal').append('<label>Polje ID vozila automobila je obavezno!</label><br/>');
+    //} else {
+    //    let input = $('#brojKuce').val();
+    //    let pattern = /^\b\d{1,4}\b$/i;
+
+    //    if (!pattern.test(input)) {
+    //        retVal = false;
+    //        $('#regVal').append('<label>Polje broj kuce nije u validnom formatu!</label><br/>');
+    //    }
+    //}
+
+    //if ($('#pozivniBroj').val() === "") {
+    //    retVal = false;
+    //    $('#regVal').append('<label>Polje pozivni broj je obavezno!</label><br/>');
+    //} else {
+    //    let input = $('#pozivniBroj').val();
+    //    let pattern = /^\b\d{4,8}\b$/i;
+
+    //    if (!pattern.test(input)) {
+    //        retVal = false;
+    //        $('#regVal').append('<label>Polje pozivni broj nije u validnom formatu!</label><br/>');
+    //    }
+    //}
+
+    //if ($('#mesto').val() === "") {
+    //    retVal = false;
+    //    $('#regVal').append('<label>Polje naseljeno mesto je obavezno!</label><br/>');
+    //} 
+
+    if (retVal) {
+        let musterija = {
+            Ime: `${$('#ime').val()}`,
+            Prezime: `${$('#prezime').val()}`,
+            JMBG: `${$('#jmbg').val()}`,
+            KorisnickoIme: `${$('#korisnickoIme').val()}`,
+            Sifra: `${$('#sifra').val()}`,
+            Email: `${$('#email').val()}`,
+            KontaktTelefon: `${$('#brojTelefona').val()}`,
+            Pol: `${$('#pol').val()}`
+            //GodisteAutomobila: `${$('#godisteAutomobila')}`,
+            //Id: `${$('#idTaxi')}`,
+            //Registracija: `${$('#registracijaAutomobila')}`,
+            //Tip: `${$('#tip')}`,
+            //Mesto: `${$('#mesto')}`,
+            //PozivniBroj: `${$('#pozivniBroj')}`,
+            //BrojKuce: `${$('#brojKuce')}`,
+            //Ulica: `${$('#ulica')}`
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/api/Dispecer/Registracija',
+            data: JSON.stringify(musterija),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
+        }).always(function (data) {
+            if (data.status === 409) {
+                $('#regVal').append('<label>Korisnicko ime je zauzeto!</label><br/>');
+            } else if (data.status === 200) {
+                $('#regVal').append('<label>Vozac je uspesno registrovan!</label><br/>');
+                IsprazniFormu();
+            } else {
+                $('#regVal').append('<label>Greska na serverskoj strani!</label><br/>');
+            }
+        });
     }
+});
 
-    if ($('#registracijaAutomobila').val() === "") {
-        retVal = false;
-        $('#regVal').append('<label>Polje registracija automobila je obavezno!</label><br/>');
-    } else {
-        let input = $('#registracijaAutomobila').val();
-        let pattern = /^\b\d{6,8}\b$/i;
+$(document).on('click', '#formirajVoznju', function () {
+    $('.mainView').html("");
+    let informations = '<table><tr><td>Ulica:</td><td><input type="text" id="ulica" placeholder="npr.Bulevar Oslobodjenja" autocomplete="off" /></td></tr>';
+    informations += '<tr><td>Broj kuce/zgrade:</td><td><input type="text" id="brojKuce" placeholder="npr.147" autocomplete="off" /></td></tr>';
+    informations += '<tr><td>Naseljeno mesto:</td><td><input type="text" id="mesto" placeholder="npr.Novi Sad" autocomplete="off" /></td></tr>';
+    informations += '<tr><td>Postanski broj:</td><td><input type="text" id="pozivniBroj" placeholder="npr.21000" autocomplete="off" /></td></tr>';
+    informations += '<tr><td>Zeljeni tip vozila:</td><td><select id="tip"><option value="0">-</option><option value="1">Putnicki</option><option value="2">Kombi</option></select></td></tr>';
+    informations += '<tr><td>Korisnicko ime vozaca:</td><td><input type="text" id="korisnickoImeV" placeholder="npr.Vozac123" autocomplete="off" /></td></tr>';
+    informations += '<tr><td></td><td><button id="kreirajVoznju">Kreiraj voznju</ button></td></tr></table>';
+    informations += '<div id="regVal"></div>';
+    $('.mainView').html(informations);
+});
 
-        if (!pattern.test(input)) {
-            retVal = false;
-            $('#regVal').append('<label>Polje registracija mora sadrzati od 6 do 8 brojeva!</label><br/>');
-        }
-    }
-
-    if ($('#idTaxi').val() === "") {
-        retVal = false;
-        $('#regVal').append('<label>Polje ID vozila automobila je obavezno!</label><br/>');
-    } else {
-        let input = $('#idTaxi').val();
-        let pattern = /^\b\d{4}\b$/i;
-
-        if (!pattern.test(input)) {
-            retVal = false;
-            $('#regVal').append('<label>Polje ID vozila mora sadrzati 4 brojeva!</label><br/>');
-        }
-    }
+$(document).off('click', '#kreirajVoznju').on('click', '#kreirajVoznju', function () {
+    var retVal = true;
+    $('#regVal').html("");
 
     if ($('#ulica').val() === "") {
         retVal = false;
         $('#regVal').append('<label>Polje ulica je obavezno!</label><br/>');
-    } 
+    }
 
     if ($('#brojKuce').val() === "") {
         retVal = false;
@@ -186,44 +278,71 @@ $(document).off('click', '#buttonRegistracijaVozaca').on('click', '#buttonRegist
 
     if ($('#mesto').val() === "") {
         retVal = false;
-        $('#regVal').append('<label>Polje ID vozila automobila je obavezno!</label><br/>');
-    } 
+        $('#regVal').append('<label>Polje naseljeno mesto je obavezno!</label><br/>');
+    }
+
+    if ($('#korisnickoImeV').val() === "") {
+        retVal = false;
+        $('#regVal').append('<label>Polje naseljeno mesto je obavezno!</label><br/>');
+    }
 
     if (retVal) {
-        let musterija = {
-            Ime: `${$('#ime').val()}`,
-            Prezime: `${$('#prezime').val()}`,
-            JMBG: `${$('#jmbg').val()}`,
-            KorisnickoIme: `${$('#korisnickoIme').val()}`,
-            Sifra: `${$('#sifra').val()}`,
-            Email: `${$('#email').val()}`,
-            KontaktTelefon: `${$('#brojTelefona').val()}`,
-            Pol: `${$('#pol').val()}`,
-            GodisteAutomobila: `${$('#godisteAutomobila')}`,
-            Id: `${$('#idTaxi')}`,
-            Registracija: `${$('#registracijaAutomobila')}`,
-            Tip: `${$('#tip')}`,
-            Mesto: `${$('#mesto')}`,
-            PozivniBroj: `${$('#pozivniBroj')}`,
-            BrojKuce: `${$('#brojKuce')}`,
-            Ulica: `${$('#ulica')}`
+        let voznja = {
+            Ulica: `${$('#ulica').val()}`,
+            Broj: `${$('#brojKuce').val()}`,
+            PozivniBroj: `${$('#pozivniBroj').val()}`,
+            Mesto: `${$('#mesto').val()}`,
+            KorisnickoImeV: `${$('#korisnickoImeV').val()}`,
+            TipVozila: `${$('#tip').val()}`
         };
 
         $.ajax({
             type: 'POST',
-            url: '/api/Dispecer/Registracija',
-            data: JSON.stringify(musterija),
+            url: '/api/Dispecer/KreirajVoznju',
+            data: JSON.stringify(voznja),
             contentType: 'application/json; charset=utf-8',
-            dataType: 'json'
-        }).always(function (data) {
-            if (data.status === 409) {
-                $('#regVal').append('<label>Korisnicko ime je zauzeto!</label><br/>');
-            } else if (data.status === 200) {
-                $('#regVal').append('<label>Vozac je uspesno registrovan!</label><br/>');
-                IsprazniFormu();
-            } else {
-                $('#regVal').append('<label>Greska na serverskoj strani!</label><br/>');
+            dataType: 'json',
+            complete: function (data) {
+               if (data.status === 200) {
+                    $('#regVal').append('<label>Voznja uspeno kreirana</label><br/>');
+                    IsprazniFormu();
+                } else {
+                    $('#regVal').append('<label>Neko je nesto cackao !</label><br/>');
+                }
             }
         });
+        
     }
+});
+
+$(document).on('click', '#obradiVoznju', function () {
+    $.ajax({
+        type: 'GET',
+        url: '/api/Dispecer/Obradi',            
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                $('.mainView').html(data.responseText);
+            } else {
+                $('.mainView').html("<h1>GRESKA NA SERVERU!</h1>");
+            }
+        }
+    });
+
+});
+
+$(document).off('click', '.obradi').on('click', '.obradi', function () {
+    var id = `${$(this).val()}`;
+    $.ajax({
+        type: 'GET',
+        url: '/api/Dispecer/Obradi/'+id,
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                $('.mainView').html(data.responseText);
+            } else {
+                $('.mainView').html("<h1>GRESKA NA SERVERU!</h1>");
+            }
+        }
+    });
 });

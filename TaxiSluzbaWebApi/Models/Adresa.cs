@@ -7,10 +7,15 @@ namespace TaxiSluzbaWebApi.Models
 {
     public class Adresa
     {
-        public string Ulica { get; set; }
+        public String Ulica { get; set; }
         public String Broj { get; set; }
-        public string NasenjenoMesto { get; set; }
+        public String NasenjenoMesto { get; set; }
         public String PozivniBroj { get; set; }
+
+        public Adresa()
+        {
+
+        }
 
     }
 }

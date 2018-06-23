@@ -1,35 +1,67 @@
-﻿$(document).on('click', '#view', function () {
-    $('.mainView').html("");
+﻿$(document).on('click', '#view', function () {  
     var korisnikJSON = sessionStorage.getItem('korisnik');
-    korisnik = $.parseJSON(korisnikJSON);
-    let informations = `<table><tr><td>Ime:</td><td>${korisnik.Ime}</td></tr>`;
-    informations += `<tr><td>Prezime:</td><td>${korisnik.Prezime}</td></tr>`;
-    informations += `<tr><td>JMBG:</td><td>${korisnik.JMBG}</td></tr>`;
-    informations += `<tr><td>Korisnicko ime:</td><td>${korisnik.KorisnickoIme}</td></tr>`;
-    informations += `<tr><td>Email:</td><td>${korisnik.Email}</td></tr>`;
-    informations += `<tr><td>Broj telefona:</td><td>${korisnik.KontaktTelefon}</td></tr></table>`;
-    $('.mainView').html(informations);
+    var korisnik = $.parseJSON(korisnikJSON);
+
+    $.ajax({
+        type: 'GET',
+        url: 'api/Korisnik/Profil',
+        data: korisnikJSON,
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                $('.mainView').html("");
+                $('.mainView').append(data.responseText);                       
+            } else {
+                $('.mainView').html("");
+                $('.mainView').append("<h1>GRESKA NA SERVERU!</h1>");
+            }
+        }
+    });
 });
 
 $(document).on('click', '#edit', function () {
-    $('.mainView').html("");
     var korisnikJSON = sessionStorage.getItem('korisnik');
-    korisnik = $.parseJSON(korisnikJSON);
-    let informations = `<table><tr><td>Ime:</td><td><input type="text" value="${korisnik.Ime}" id="imeEdit" /></td></tr>`;
-    informations += `<tr><td>Prezime:</td><td><input type="text" value="${korisnik.Prezime}" id="prezimeEdit" /></td></tr>`;
-    informations += `<tr><td>JMBG:</td><td><input type="text" value="${korisnik.JMBG}" id="jmbgEdit" /></td></tr>`;
-    informations += `<tr><td>Korisnicko ime:</td><td><input type="text" value="${korisnik.KorisnickoIme}" id="korisnickoImeEdit" /></td></tr>`;
-    informations += `<tr><td>Email:</td><td><input type="email" value="${korisnik.Email}" id="emailEdit" /></td></tr>`;
-    informations += `<tr><td>Broj telefona:</td><td><input type="text" value="${korisnik.KontaktTelefon}" id="brojTelefonaEdit" /></td></tr>`;
-    informations += '<tr><td></td><td><button id="buttonEdit">Sacuvaj izmene</button></td></tr></table>';
-    informations += '<div id="regValEdit"></div>';
-    $('.mainView').html(informations);
+    var korisnik = $.parseJSON(korisnikJSON);
+
+    $.ajax({
+        type: 'GET',
+        url: 'api/Korisnik/ProfilEdit',
+        data: korisnikJSON,
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                $('.mainView').html("");
+                $('.mainView').append(data.responseText);
+            } else {
+                $('.mainView').html("");
+                $('.mainView').append("<h1>GRESKA NA SERVERU!</h1>");
+            }
+        }
+    });
+});
+
+$(document).on('click', '#change', function () {
+    $.ajax({
+        type: 'GET',
+        url: 'api/Korisnik/Sifra',
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                $('.mainView').html("");
+                $('.mainView').append(data.responseText);
+            } else {
+                $('.mainView').html("");
+                $('.mainView').append("<h1>GRESKA NA SERVERU!</h1>");
+            }
+        }
+    });
 });
 
 $(document).on('click', '#logout', function () { 
         sessionStorage.setItem('korisnik', null);
         window.location.href = "Index.html";
-
 });
 
 $(document).off('click', '#buttonEdit').on('click', '#buttonEdit', function () {
@@ -90,7 +122,7 @@ $(document).off('click', '#buttonEdit').on('click', '#buttonEdit', function () {
 /////////////////////////////////////////////////////////////////
     if (retVal) {
         var korisnikJSON = sessionStorage.getItem('korisnik');
-        korisnik = $.parseJSON(korisnikJSON);
+        var korisnik = $.parseJSON(korisnikJSON);
 
         let musterija = {
             Ime: `${$('#imeEdit').val()}`,
@@ -103,7 +135,7 @@ $(document).off('click', '#buttonEdit').on('click', '#buttonEdit', function () {
         };
 
         $.ajax({
-            type: 'POST',
+            type: 'PUT',
             url: '/api/Korisnik/Edit',
             data: JSON.stringify(musterija),
             contentType: 'application/json; charset=utf-8',
@@ -120,16 +152,6 @@ $(document).off('click', '#buttonEdit').on('click', '#buttonEdit', function () {
         });
         return false;
     }
-});
-
-$(document).on('click', '#change', function () {
-    $('.mainView').html("");
-    let informations = '<table><tr><td>Unesite sifru:</td><td><input type="password" id="sifraAut" /></td></tr>';
-    informations += '<tr><td>Unesite novu sifru:</td><td><input type="password" id="sifraNova" /></td></tr>';
-    informations += '<tr><td>Unesite ponovite novu sifru:</td><td><input type="password" id="sifraNovaP" /></td></tr>';
-    informations += '<tr><td></td><td><button id="promeniSifru">Promeni sifru</ button></td></tr></table>';
-    informations += '<div id="regValEditS"></div>';
-    $('.mainView').html(informations);
 });
 
 $(document).off('click','#promeniSifru').on('click', '#promeniSifru', function () {
@@ -168,7 +190,7 @@ $(document).off('click','#promeniSifru').on('click', '#promeniSifru', function (
         korisnik.Sifra = `${$('#sifraNova').val()}`;
         sessionStorage.setItem('korisnik', JSON.stringify(korisnik));
         $.ajax({
-            type: 'POST',
+            type: 'PUT',
             url: '/api/Korisnik/ChangePass',
             data: JSON.stringify(korisnik),
             contentType: 'application/json; charset=utf-8',
@@ -181,7 +203,6 @@ $(document).off('click','#promeniSifru').on('click', '#promeniSifru', function (
                     $('#regValEditS').append('<label>Neko je cackao skriptu!</label><br/>');              
             }
         });
-        return true;
     }
 
 });
