@@ -25,7 +25,7 @@ namespace TaxiSluzbaWebApi.Controllers
             var sifra = jsonObj.Value<string>("Sifra");
             var refresh = jsonObj.Value<bool>("Refresh");
             var response = new HttpResponseMessage();
-            
+
             var page = "";
 
             if (korisnickoIme == null || sifra == null)

@@ -186,8 +186,8 @@ C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\Tax
 C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\bin\Microsoft.AI.ServerTelemetryChannel.xml
 C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\bin\Microsoft.AI.WindowsServer.xml
 C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\bin\Microsoft.AI.Web.xml
+C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\obj\Debug\TaxiSluzbaWebApi.csprojResolveAssemblyReference.cache
 C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\obj\Debug\TaxiSluzbaWebApi.csproj.CoreCompileInputs.cache
 C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\obj\Debug\TaxiSluzbaWebApi.csproj.CopyComplete
 C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\obj\Debug\TaxiSluzbaWebApi.dll
 C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\obj\Debug\TaxiSluzbaWebApi.pdb
-C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\obj\Debug\TaxiSluzbaWebApi.csprojResolveAssemblyReference.cache

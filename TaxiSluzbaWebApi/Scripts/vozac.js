@@ -36,7 +36,7 @@ $(document).off('click','#promeniLokaciju').on('click','#promeniLokaciju',functi
 
     if ($('#brojKuce').val() === "") {
         retVal = false;
-        $('#regVal').append('<label>Polje ID vozila automobila je obavezno!</label><br/>');
+        $('#regVal').append('<label>Polje broj kuce je obavezno!</label><br/>');
     } else {
         let input = $('#brojKuce').val();
         let pattern = /^\b\d{1,4}\b$/i;
@@ -95,4 +95,169 @@ $(document).off('click','#promeniLokaciju').on('click','#promeniLokaciju',functi
             }
         });
     }
+});
+
+$(document).on('click', '#changeStatus', function () {
+    var korisnikJSON = sessionStorage.getItem('korisnik');
+    var korisnik = $.parseJSON(korisnikJSON);
+
+    $.ajax({
+        type: 'GET',
+        url: 'api/Vozac/Status',
+        data: JSON.stringify(korisnik),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                $('.mainView').html("");
+                $('.mainView').append(data.responseText);
+            } else {
+                $('.mainView').html("");
+                $('.mainView').append("<h1>GRESKA NA SERVERU!</h1>");
+            }
+        }
+    });
+});
+
+$(document).on('click', '#promeniStatus', function () {
+    
+    var retVal = true;
+    if ($('#statusV').val() === "6") {
+        $('#regVal').html("");
+        if ($('#ulicaO').val() === "") {
+            retVal = false;
+            $('#regVal').append('<label>Polje ulica je obavezno!</label><br/>');
+        }
+
+        if ($('#brojO').val() === "") {
+            retVal = false;
+            $('#regVal').append('<label>Polje ID vozila automobila je obavezno!</label><br/>');
+        } else {
+            let input = $('#brojO').val();
+            let pattern = /^\b\d{1,4}\b$/i;
+
+            if (!pattern.test(input)) {
+                retVal = false;
+                $('#regVal').append('<label>Polje broj kuce nije u validnom formatu!</label><br/>');
+            }
+        }
+
+        if ($('#pozivniBrojO').val() === "") {
+            retVal = false;
+            $('#regVal').append('<label>Polje pozivni broj je obavezno!</label><br/>');
+        } else {
+            let input = $('#pozivniBrojO').val();
+            let pattern = /^\b\d{4,8}\b$/i;
+
+            if (!pattern.test(input)) {
+                retVal = false;
+                $('#regVal').append('<label>Polje pozivni broj nije u validnom formatu!</label><br/>');
+            }
+        }
+
+        if ($('#mestoO').val() === "") {
+            retVal = false;
+            $('#regVal').append('<label>Polje naseljeno mesto je obavezno!</label><br/>');
+        }
+    } else {
+        if ($('#ulicaO').val() !== "") {
+            retVal = false;
+            $('#regVal').html('<label>Polje moraju biti prazna! Status voznje je neuspesna!</label><br/>');
+        }
+
+        if ($('#brojO').val() !== "") {
+            retVal = false;
+            $('#regVal').html('<label>Polje moraju biti prazna! Status voznje je neuspesna!</label><br/>');
+        } 
+
+
+        if ($('#pozivniBrojO').val() !== "") {
+            retVal = false;
+            $('#regVal').html('<label>Polje moraju biti prazna! Status voznje je neuspesna!</label><br/>');
+        } 
+
+        if ($('#mestoO').val() !== "") {
+            retVal = false;
+            $('#regVal').html('<label>Polje moraju biti prazna! Status voznje je neuspesna!</label><br/>');
+        }
+    }
+    if (retVal) {
+        var korisnikJSON = sessionStorage.getItem('korisnik');
+        var korisnik = $.parseJSON(korisnikJSON);
+
+        let data = {
+            Mesto: `${$('#mestoO').val()}`,
+            PozivniBroj: `${$('#pozivniBrojO').val()}`,
+            BrojKuce: `${$('#brojO').val()}`,
+            Ulica: `${$('#ulicaO').val()}`,
+            KorisnickoIme: korisnik.KorisnickoIme,
+            Status: `${$('#statusV').val()}`,
+            ID: `${$('#promeniStatus').val()}`
+        };
+
+        $.ajax({
+            type: 'PUT',
+            url: 'api/Vozac/ZavrsiVoznju',
+            data: JSON.stringify(data),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'html',
+            complete: function (data) {
+                if (data.status === 200) {
+                    $('.mainView').html("");
+                    $('.mainView').append(data.responseText);
+                } else {
+                    $('.mainView').html("");
+                    $('.mainView').append("<h1>GRESKA NA SERVERU!</h1>");
+                }
+            }
+        });
+    }
+});
+
+$(document).on('click', '#waiting', function () {
+    var korisnikJSON = sessionStorage.getItem('korisnik');
+    var korisnik = $.parseJSON(korisnikJSON);
+
+    $.ajax({
+        type: 'GET',
+        url: 'api/Vozac/Obradi',
+        data: JSON.stringify(korisnik),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                $('.mainView').html("");
+                $('.mainView').append(data.responseText);
+            } else {
+                $('.mainView').html("");
+                $('.mainView').append("<h1>GRESKA NA SERVERU!</h1>");
+            }
+        }
+    });
+});
+
+$(document).off('click', '.obradiV').on('click', '.obradiV', function () {
+    var id = `${$(this).val()}`;
+    var korisnikJSON = sessionStorage.getItem('korisnik');
+    korisnik = $.parseJSON(korisnikJSON);
+
+    let data = {
+        ID: id,
+        KorisnickoIme: korisnik.KorisnickoIme
+    };
+
+    $.ajax({
+        type: 'PUT',
+        url: '/api/Vozac/Obradi',
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                $('.mainView').html(data.responseText);
+            } else {
+                $('.mainView').html("data.responseText");
+            }
+        }
+    });
 });

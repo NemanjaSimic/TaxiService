@@ -117,26 +117,29 @@ namespace TaxiSluzbaWebApi.Models
 
         public void UcitajVoznje()
         {
+            int id = 1;
             using (TextReader tr = new StreamReader(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\App_Data\Voznje.txt"))
             {
                 Voznja voznja = null;              
                 string informacije = string.Empty;
                 while ((informacije = tr.ReadLine()) != null)
                 {
-                    voznja = new Voznja();
-                    voznja.Lokacija = new Lokacija();
-                    voznja.Vozac = new Vozac();
-                    voznja.Komentar = new Komentar();
-
-                    string[] parametri = informacije.Split(';');
-                    Int32.TryParse(parametri[0],out int id);
-                    voznja.ID = id;
-                    voznja.DatumVremePoruzbine = DateTime.Parse(parametri[1]);
-                    voznja.Lokacija.Adresa.Ulica = parametri[2];
-                    voznja.Lokacija.Adresa.Broj = parametri[3];
-                    voznja.Lokacija.Adresa.NasenjenoMesto = parametri[4];
-                    voznja.Lokacija.Adresa.PozivniBroj = parametri[5];
-                    Int32.TryParse(parametri[6], out int tip);
+                    voznja = new Voznja
+                    {
+                        Lokacija = new Lokacija(),
+                        Vozac = new Vozac(),
+                        Komentar = new Komentar(),
+                        Musterija = new Musterija(),
+                        Odrediste = new Lokacija(),                       
+                    };
+                    string[] parametri = informacije.Split(';');                   
+                    voznja.ID = id++;
+                    voznja.DatumVremePoruzbine = DateTime.Parse(parametri[0]);
+                    voznja.Lokacija.Adresa.Ulica = parametri[1];
+                    voznja.Lokacija.Adresa.Broj = parametri[2];
+                    voznja.Lokacija.Adresa.NasenjenoMesto = parametri[3];
+                    voznja.Lokacija.Adresa.PozivniBroj = parametri[4];
+                    Int32.TryParse(parametri[5], out int tip);
                     if (tip == 0)
                     {
                         voznja.TipAutomobila = Enum.TipAutomobila.BezNaznake;
@@ -149,23 +152,27 @@ namespace TaxiSluzbaWebApi.Models
                     {
                         voznja.TipAutomobila = Enum.TipAutomobila.Kombi;
                     }
-                    //if (!parametri[7].Equals(""))
-                    //{
-                    //    voznja.Musterija = new Musterija();
-                    //    voznja.Musterija = BazaPodataka.Instanca.NadjiMusteriju(parametri[7]);
-                    //}
-                    //voznja.Odrediste.Adresa.Ulica = parametri[8];
-                    //voznja.Odrediste.Adresa.Broj = parametri[9];
-                    //voznja.Odrediste.Adresa.NasenjenoMesto = parametri[10];
-                    //voznja.Odrediste.Adresa.PozivniBroj = parametri[11];
-                    //if (!parametri[12].Equals(""))
-                    //{
-                    //    voznja.Dispecer = new Dispecer();
-                    //    voznja.Dispecer = BazaPodataka.Instanca.NadjiDispecera(parametri[12]);
-                    //}
-                    //voznja.Vozac = BazaPodataka.Instanca.NadjiVozaca(parametri[13]);
+                    if (!parametri[6].Equals(""))
+                    {
+                        voznja.Musterija = BazaPodataka.Instanca.NadjiMusteriju(parametri[6]);
+                    }
+                    voznja.Odrediste.Adresa = new Adresa
+                    {
+                        Ulica = parametri[7],
+                        Broj = parametri[8],
+                        NasenjenoMesto = parametri[9],
+                        PozivniBroj = parametri[10]
+                    };
+                    if (!parametri[11].Equals(""))
+                    {
+                        voznja.Dispecer = BazaPodataka.Instanca.NadjiDispecera(parametri[11]);
+                    }
+                    if (!parametri[12].Equals(""))
+                    {
+                        voznja.Vozac = BazaPodataka.Instanca.NadjiVozaca(parametri[12]);
+                    }
+                    voznja.StatusVoznje = Enum.StatusVoznje.Uspesna;
 
-                    //voznja.StatusVoznje = Enum.StatusVoznje.Uspesna;
                     Voznje.Add(voznja);
                 }
             }
@@ -304,8 +311,6 @@ namespace TaxiSluzbaWebApi.Models
                 {
                     foreach (var item in Voznje)
                     {
-                        tw.Write(item.ID.ToString());
-                        tw.Write(";");
                         tw.Write(item.DatumVremePoruzbine.ToString());
                         tw.Write(";");
                         tw.Write(item.Lokacija.Adresa.Ulica);
@@ -317,40 +322,80 @@ namespace TaxiSluzbaWebApi.Models
                         tw.Write(item.Lokacija.Adresa.PozivniBroj);
                         tw.Write(";");                       
                         tw.Write(item.TipAutomobila.ToString());
-                        //tw.Write(";");
-                        //if (item.Musterija == null)
-                        //{
-                        //    tw.Write("");
-                        //}
-                        //else
-                        //{
-                        //    tw.Write(item.Musterija.KorisnickoIme);
-                        //}
-                        //tw.Write(";");
-                        //tw.Write(item.Odrediste.Adresa.Ulica);
-                        //tw.Write(";");
-                        //tw.Write(item.Odrediste.Adresa.Broj);
-                        //tw.Write(";");
-                        //tw.Write(item.Odrediste.Adresa.NasenjenoMesto);
-                        //tw.Write(";");
-                        //tw.Write(item.Odrediste.Adresa.PozivniBroj);
-                        //tw.Write(";");
-                        //if (item.Dispecer == null)
-                        //{
-                        //    tw.Write("");
-                        //}
-                        //else
-                        //{
-                        //    tw.Write(item.Dispecer.KorisnickoIme);
-                        //}
-                        //tw.Write(";");
-                        //tw.Write(item.Vozac.KorisnickoIme);
-                        //tw.Write(";");
-                        //tw.Write(item.Iznos.ToString());
-                        //tw.Write(";");
-                        //tw.Write(item.Komentar.ID.ToString());
-                        //tw.Write(";");
-                        //tw.Write(item.StatusVoznje.ToString());
+                        tw.Write(";");
+                        if (item.Musterija == null)
+                        {
+                            tw.Write("");
+                        }
+                        else
+                        {
+                            tw.Write(item.Musterija.KorisnickoIme);
+                        }
+                        tw.Write(";");
+                        if (item.Odrediste == null)
+                        {
+                            tw.Write("");
+                            tw.Write(";");
+                            tw.Write("");
+                            tw.Write(";");
+                            tw.Write("");
+                            tw.Write(";");
+                            tw.Write("");
+                            tw.Write(";");
+                        }
+                        else
+                        {
+                            tw.Write(item.Odrediste.Adresa.Ulica);
+                            tw.Write(";");
+                            tw.Write(item.Odrediste.Adresa.Broj);
+                            tw.Write(";");
+                            tw.Write(item.Odrediste.Adresa.NasenjenoMesto);
+                            tw.Write(";");
+                            tw.Write(item.Odrediste.Adresa.PozivniBroj);
+                            tw.Write(";");
+                        }
+                        
+                        if (item.Dispecer == null)
+                        {
+                            tw.Write("");
+                        }
+                        else
+                        {
+                            tw.Write(item.Dispecer.KorisnickoIme);
+                        }
+                        tw.Write(";");
+                        if (item.Vozac == null)
+                        {
+                            tw.Write("");
+                            tw.Write(";");
+                        }
+                        else
+                        {
+                            tw.Write(item.Vozac.KorisnickoIme);
+                            tw.Write(";");
+                        }
+                        if (item.Iznos <= 0)
+                        {
+                            tw.Write("");
+                            tw.Write(";");
+                        }
+                        else
+                        {
+                            tw.Write(item.Iznos.ToString());
+                            tw.Write(";");
+                        }
+                        if (item.Komentar == null)
+                        {
+                            tw.Write("");
+                            tw.Write(";");
+                        }
+                        else
+                        {
+                            tw.Write(item.Komentar.ID.ToString());
+                            tw.Write(";");
+                        }                        
+                        
+                        tw.Write(item.StatusVoznje.ToString());
                         if (Voznje.IndexOf(item) != Voznje.Count() - 1)
                         {
                             tw.Write("\n");

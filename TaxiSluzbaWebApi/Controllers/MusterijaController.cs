@@ -48,6 +48,23 @@ namespace TaxiSluzbaWebApi.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
+            var response = new HttpResponseMessage();
+            var ulogovani = (List<User>)HttpContext.Current.Application["ulogovani"];
+            if (ulogovani == null)
+            {
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+            else if (ulogovani.Find(u => u.KorisnickoIme.Equals(korisnickoIme)) == null)
+            {
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+            else if (ulogovani.Find(u => u.KorisnickoIme.Equals(korisnickoIme)).Uloga != Models.Enum.Uloga.Musterija)
+            {
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
 
             Voznja novaVoznja = new Voznja
             {
@@ -61,16 +78,9 @@ namespace TaxiSluzbaWebApi.Controllers
             novaVoznja.StatusVoznje = Models.Enum.StatusVoznje.Kreirana;
             novaVoznja.Musterija = new Musterija();
             novaVoznja.Musterija = BazaPodataka.Instanca.NadjiMusteriju(korisnickoIme);
-            
-
-            if (HttpContext.Current.Application["noveVoznje"] == null)
-            {
-                HttpContext.Current.Application["noveVoznje"] = new List<Voznja>();
-            }
-            var listaVoznji = (List<Voznja>)HttpContext.Current.Application["noveVoznje"];
-            novaVoznja.ID = listaVoznji.Count - 1;
-
-            listaVoznji.Add(novaVoznja);
+            novaVoznja.DatumVremePoruzbine = DateTime.Now;         
+            novaVoznja.ID = BazaPodataka.Instanca.Voznje.Count + 1;
+            BazaPodataka.Instanca.Voznje.Add(novaVoznja);
 
             return Request.CreateResponse(HttpStatusCode.OK);
         }

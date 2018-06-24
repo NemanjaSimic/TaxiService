@@ -63,8 +63,6 @@ $(document).on('click', '#logout', function () {
     var korisnikJSON = sessionStorage.getItem('korisnik');
     var korisnik = $.parseJSON(korisnikJSON);
 
-    
-
     $.ajax({
         type: 'DELETE',
         url: 'api/Korisnik/LogOut',

@@ -299,9 +299,20 @@ $(document).on('click', '#obradiVoznju', function () {
 
 $(document).off('click', '.obradi').on('click', '.obradi', function () {
     var id = `${$(this).val()}`;
+    var korisnikJSON = sessionStorage.getItem('korisnik');
+    korisnik = $.parseJSON(korisnikJSON);
+
+    let data = {
+        ID: id,
+        Vozac: `${$('#idVozaca').val()}`,
+        KorisnickoIme: korisnik.KorisnickoIme
+    };
+
     $.ajax({
-        type: 'GET',
-        url: '/api/Dispecer/Obradi/'+id,
+        type: 'PUT',
+        url: '/api/Dispecer/Obradi',
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
         dataType: 'html',
         complete: function (data) {
             if (data.status === 200) {
