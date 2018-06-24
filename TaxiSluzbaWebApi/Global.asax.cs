@@ -7,6 +7,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using System.Web.SessionState;
 
 namespace TaxiSluzbaWebApi
 {
@@ -20,7 +21,13 @@ namespace TaxiSluzbaWebApi
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             Models.BazaPodataka.Instanca.UcitajPodatkeIzBaze();
+            //Application_PostAuthorizeRequest();
         }
+
+        //protected void Application_PostAuthorizeRequest()
+        //{
+        //        HttpContext.Current.SetSessionStateBehavior(SessionStateBehavior.Required);
+        //}
 
         
     }

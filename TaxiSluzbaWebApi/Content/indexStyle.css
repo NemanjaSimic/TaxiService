@@ -113,3 +113,7 @@ table{
     border: 2px solid blue;
     margin-top:5%;
 }
+
+#prikazVoznji{
+    display : none;
+}

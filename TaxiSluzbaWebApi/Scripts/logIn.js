@@ -21,13 +21,16 @@ function PogresanUsername() {
 
 }
 
-function LogIn(user) {
+function LogIn(user,refresh) {
     var korisnik = user;
     if (korisnik === null) {
         korisnik = {
             KorisnickoIme: `${$('#username').val()}`,
-            Sifra: `${$('#password').val()}`
+            Sifra: `${$('#password').val()}`,        
+            Refresh: refresh
         };
+    } else {
+        korisnik.Refresh = refresh;
     }
 
     $.ajax({
@@ -38,7 +41,7 @@ function LogIn(user) {
         dataType: 'html',
         complete: function (data) {
             if (data.status === 200) {
-                $('.mainView').html("");
+                $('.mainView').html('<div><button id="prikazVoznji">Osvezi voznje</button><div>');
                 $('.header').append(data.responseText);
                 sessionStorage.setItem('korisnik', JSON.stringify(korisnik));
                 $('#korImeVal').html("");
@@ -49,9 +52,13 @@ function LogIn(user) {
             } else if (data.status === 401) {
                 DobarUsername();
                 PogresnaSifra();
-            } else {
+            } else if (data.status === 409) {
                 DobraSifra();
                 PogresanUsername();
+            } else if (data.status === 403) {
+                $('.mainView').html('<h1>Izlogujte se sa prijavljenog naloga!</h1>');
+            } else {
+                $('.mainView').html('<h1>Greska na serveru!</h1>');
             }
         }
     });
@@ -64,11 +71,11 @@ $(document).ready(function () {
     } else {
         var korisnikJSON = sessionStorage.getItem('korisnik');
         korisnik = $.parseJSON(korisnikJSON);
-        LogIn(korisnik);
+        LogIn(korisnik,true);
     }
 
         $('#buttonPrijava').click(function () {
-            LogIn(korisnik);                  
+            LogIn(korisnik,false);                  
     });
 
 });

@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Http;
 using TaxiSluzbaWebApi.Models;
 
+
 namespace TaxiSluzbaWebApi.Controllers
 {
     [RoutePrefix("api/Korisnik")]
@@ -22,10 +23,47 @@ namespace TaxiSluzbaWebApi.Controllers
             
             var korisnickoIme = jsonObj.Value<string>("KorisnickoIme");
             var sifra = jsonObj.Value<string>("Sifra");
-
+            var refresh = jsonObj.Value<bool>("Refresh");
             var response = new HttpResponseMessage();
-
+            
             var page = "";
+
+            if (korisnickoIme == null || sifra == null)
+            {
+                response.Content = new StringContent("");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+
+            if (HttpContext.Current.Application["ulogovani"] == null)
+            {
+                HttpContext.Current.Application["ulogovani"] = new List<User>();
+            }
+            var ulogovani = (List<User>)HttpContext.Current.Application["ulogovani"];
+
+            //var ulogovan = (User)HttpContext.Current.Session["ulogovan"];
+            //if (ulogovan != null)
+            //{
+            //    response.Content = new StringContent("");
+            //    response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+            //    response.StatusCode = HttpStatusCode.Forbidden;
+            //    return response;
+            //}
+            if (!refresh)
+            {
+                foreach (var item in ulogovani)
+                {
+                    if (item.KorisnickoIme.Equals(korisnickoIme))
+                    {
+                        response.Content = new StringContent("");
+                        response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                        response.StatusCode = HttpStatusCode.Forbidden;
+                        return response;
+                    }
+                }             
+            }
+            
 
             var m = BazaPodataka.Instanca.NadjiMusteriju(korisnickoIme);
             if (m == null)
@@ -38,7 +76,7 @@ namespace TaxiSluzbaWebApi.Controllers
                     {
                         response.Content = new StringContent("");
                         response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-                        response.StatusCode = HttpStatusCode.BadRequest;
+                        response.StatusCode = HttpStatusCode.Conflict;
                         return response;
                     }
                     else if(v.Sifra.Equals(sifra))
@@ -53,6 +91,14 @@ namespace TaxiSluzbaWebApi.Controllers
                         response.Content = new StringContent(page);
                         response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
                         response.StatusCode = HttpStatusCode.OK;
+                        //HttpContext.Current.Session["ulogovan"] = new Vozac();
+                        //HttpContext.Current.Session["ulogovan"] = v;
+                        //HttpContext.Current.Application["ulogovan"] = new Vozac();
+                        if (!refresh)
+                        {
+                            ulogovani.Add(v);
+                            HttpContext.Current.Application["ulogovani"] = ulogovani;
+                        }
                         return response;
                     }
                     else
@@ -76,6 +122,14 @@ namespace TaxiSluzbaWebApi.Controllers
                     response.Content = new StringContent(page);
                     response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
                     response.StatusCode = HttpStatusCode.OK;
+                    if (!refresh)
+                    {
+                        ulogovani.Add(d);
+                        HttpContext.Current.Application["ulogovani"] = ulogovani;
+                    }
+                    
+                    //HttpContext.Current.Session["ulogovan"] = new Dispecer();
+                    //HttpContext.Current.Session["ulogovan"] = d;
                     return response;
                 }
                 else
@@ -98,6 +152,13 @@ namespace TaxiSluzbaWebApi.Controllers
                 response.Content = new StringContent(page);
                 response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
                 response.StatusCode = HttpStatusCode.OK;
+                if (!refresh)
+                {
+                    ulogovani.Add(m);
+                    HttpContext.Current.Application["ulogovani"] = ulogovani;
+                }               
+                //HttpContext.Current.Session["ulogovan"] = new Musterija();
+                //HttpContext.Current.Session["ulogovan"] = m;
                 return response;
             }
             else
@@ -108,6 +169,33 @@ namespace TaxiSluzbaWebApi.Controllers
                 return response;
             }
           
+        }
+        [HttpDelete]
+        [Route("LogOut")]
+        public HttpResponseMessage LogOut([FromBody]JToken jToken)
+        {
+            //var jsonObj = JToken.Parse(Request.RequestUri.ToString().Split('?').Last());
+
+            //var korisnickoIme = jsonObj.Value<string>("KorisnickoIme");
+            var korisnickoIme = jToken.Value<string>("KorisnickoIme");
+            var ulogovani = (List<User>)HttpContext.Current.Application["ulogovani"];
+
+
+            if (ulogovani == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+            try
+            {
+                ulogovani.Remove(ulogovani.Find(x => x.KorisnickoIme.Equals(korisnickoIme)));
+            }
+            catch (Exception)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+            HttpContext.Current.Application["ulogovani"] = ulogovani;
+            var ulogovani2 = (List<User>)HttpContext.Current.Application["ulogovani"];
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
         [HttpPost]
         [Route("Registracija")]

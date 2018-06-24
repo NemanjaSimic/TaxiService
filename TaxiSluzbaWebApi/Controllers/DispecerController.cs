@@ -21,14 +21,16 @@ namespace TaxiSluzbaWebApi.Controllers
             var korisnickoIme = jToken.Value<string>("KorisnickoIme");
             var sifra = jToken.Value<string>("Sifra");
 
-            Vozac noviVozac = new Vozac();
-            noviVozac.Ime = jToken.Value<string>("Ime");
-            noviVozac.Prezime = jToken.Value<string>("Prezime");
-            noviVozac.JMBG = jToken.Value<string>("JMBG");
-            noviVozac.KorisnickoIme = jToken.Value<string>("KorisnickoIme");
-            noviVozac.Sifra = jToken.Value<string>("Sifra");
-            noviVozac.Email = jToken.Value<string>("Email");
-            noviVozac.KontaktTelefon = jToken.Value<string>("KontaktTelefon");
+            Vozac noviVozac = new Vozac
+            {
+                Ime = jToken.Value<string>("Ime"),
+                Prezime = jToken.Value<string>("Prezime"),
+                JMBG = jToken.Value<string>("JMBG"),
+                KorisnickoIme = jToken.Value<string>("KorisnickoIme"),
+                Sifra = jToken.Value<string>("Sifra"),
+                Email = jToken.Value<string>("Email"),
+                KontaktTelefon = jToken.Value<string>("KontaktTelefon")
+            };
             Int32.TryParse(jToken.Value<string>("Pol"), out int p);
             if (p == 0)
             {
@@ -120,22 +122,6 @@ namespace TaxiSluzbaWebApi.Controllers
             //    return Request.CreateResponse(HttpStatusCode.BadRequest);
             //}
 
-            //input = adresa.PozivniBroj;
-            //pattern = new Regex(@"\d{4,8}");
-            //match = pattern.Match(input);
-            //if (!match.Success)
-            //{
-            //    return Request.CreateResponse(HttpStatusCode.BadRequest);
-            //}
-
-            //input = adresa.Broj;
-            //pattern = new Regex(@"\d{1,4}");
-            //match = pattern.Match(input);
-            //if (!match.Success)
-            //{
-            //    return Request.CreateResponse(HttpStatusCode.BadRequest);
-            //}
-
             if (BazaPodataka.Instanca.NadjiDispecera(noviVozac.KorisnickoIme) != null)
             {
                 return Request.CreateResponse(HttpStatusCode.Conflict);
@@ -158,6 +144,7 @@ namespace TaxiSluzbaWebApi.Controllers
         [Route("KreirajVoznju")]
         public HttpResponseMessage KreirajVoznju([FromBody]JToken jToken)
         {
+            var korisnickoIme = jToken.Value<string>("KorisnickoIme");
             var Mesto = jToken.Value<string>("Mesto");
             var Ulica = jToken.Value<string>("Ulica");
             var Broj = jToken.Value<string>("Broj");
@@ -174,6 +161,10 @@ namespace TaxiSluzbaWebApi.Controllers
                 TipVozila = Models.Enum.TipAutomobila.Kombi;
             }
 
+            if (BazaPodataka.Instanca.NadjiDispecera(korisnickoIme) == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
 
             if (Mesto == null || Ulica == null || Broj == null || PozivniBroj == null || KorisnickoImeV == null)
             {
@@ -184,17 +175,23 @@ namespace TaxiSluzbaWebApi.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
-            Voznja novaVoznja = new Voznja();
-            novaVoznja.ID = BazaPodataka.Instanca.Voznje.Count();
-            novaVoznja.DatumVremePoruzbine = DateTime.Now;
-            novaVoznja.Lokacija = new Lokacija();
-            novaVoznja.Lokacija.Adresa = new Adresa();
-            novaVoznja.Lokacija.Adresa.Broj = Broj;
-            novaVoznja.Lokacija.Adresa.NasenjenoMesto = Mesto;
-            novaVoznja.Lokacija.Adresa.PozivniBroj = PozivniBroj;
-            novaVoznja.Lokacija.Adresa.Ulica = Ulica;
+            Voznja novaVoznja = new Voznja
+            {
+                ID = BazaPodataka.Instanca.Voznje.Count(),
+                DatumVremePoruzbine = DateTime.Now,
+                Lokacija = new Lokacija()
+            };
+            novaVoznja.Lokacija.Adresa = new Adresa
+            {
+                Broj = Broj,
+                NasenjenoMesto = Mesto,
+                PozivniBroj = PozivniBroj,
+                Ulica = Ulica
+            };
             novaVoznja.StatusVoznje = Models.Enum.StatusVoznje.Formirana;
             novaVoznja.TipAutomobila = TipVozila;
+            novaVoznja.Dispecer = new Dispecer();
+            novaVoznja.Dispecer = BazaPodataka.Instanca.NadjiDispecera(korisnickoIme);
 
             if (HttpContext.Current.Application["noveVoznje"] == null)
             {
@@ -239,6 +236,15 @@ namespace TaxiSluzbaWebApi.Controllers
         {
             var response = new HttpResponseMessage();
             var informations = "";
+            var listaSlobodnihVozaca = new List<Vozac>();
+            foreach (var item in BazaPodataka.Instanca.Vozaci)
+            {
+                if (!item.Zauzet)
+                {
+                    listaSlobodnihVozaca.Add(item);
+                }
+            }
+
             var listaVoznji = (List<Voznja>)HttpContext.Current.Application["noveVoznje"];
             if (listaVoznji == null)
             {
@@ -254,7 +260,12 @@ namespace TaxiSluzbaWebApi.Controllers
                         informations += String.Format(@"<tr><td>Broj:</td><td>{0}</td></tr>", item.Lokacija.Adresa.Broj);
                         informations += String.Format(@"<tr><td>Mesto:</td><td>{0}</td></tr>", item.Lokacija.Adresa.NasenjenoMesto);
                         informations += String.Format(@"<tr><td>Pozivni broj:</td><td>{0}</td></tr>", item.Lokacija.Adresa.PozivniBroj);
-                        informations += String.Format(@"<tr><td>Biraje vozaca:</td><td></td></tr>");
+                        informations += String.Format(@"<tr><td>Biraje vozaca:</td><td><select>");
+                        foreach (var v in listaSlobodnihVozaca)
+                        {
+                            informations += String.Format(@"<option>{0}</option>",v.KorisnickoIme);
+                        }
+                        informations += String.Format(@"</select></td></tr>");
                         informations += String.Format(@"<tr><td></td><td><button class=""obradi"" value=""{0}"">Obradi voznju</button></td></tr>", item.ID);
                         informations += "</table>";
                         response.Content = new StringContent(informations);

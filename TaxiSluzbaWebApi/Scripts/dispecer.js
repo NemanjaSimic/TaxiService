@@ -153,42 +153,7 @@ $(document).off('click', '#buttonRegistracijaVozaca').on('click', '#buttonRegist
     //    }
     //}
 
-    //if ($('#ulica').val() === "") {
-    //    retVal = false;
-    //    $('#regVal').append('<label>Polje ulica je obavezno!</label><br/>');
-    //} 
-
-    //if ($('#brojKuce').val() === "") {
-    //    retVal = false;
-    //    $('#regVal').append('<label>Polje ID vozila automobila je obavezno!</label><br/>');
-    //} else {
-    //    let input = $('#brojKuce').val();
-    //    let pattern = /^\b\d{1,4}\b$/i;
-
-    //    if (!pattern.test(input)) {
-    //        retVal = false;
-    //        $('#regVal').append('<label>Polje broj kuce nije u validnom formatu!</label><br/>');
-    //    }
-    //}
-
-    //if ($('#pozivniBroj').val() === "") {
-    //    retVal = false;
-    //    $('#regVal').append('<label>Polje pozivni broj je obavezno!</label><br/>');
-    //} else {
-    //    let input = $('#pozivniBroj').val();
-    //    let pattern = /^\b\d{4,8}\b$/i;
-
-    //    if (!pattern.test(input)) {
-    //        retVal = false;
-    //        $('#regVal').append('<label>Polje pozivni broj nije u validnom formatu!</label><br/>');
-    //    }
-    //}
-
-    //if ($('#mesto').val() === "") {
-    //    retVal = false;
-    //    $('#regVal').append('<label>Polje naseljeno mesto je obavezno!</label><br/>');
-    //} 
-
+   
     if (retVal) {
         let musterija = {
             Ime: `${$('#ime').val()}`,
@@ -203,10 +168,7 @@ $(document).off('click', '#buttonRegistracijaVozaca').on('click', '#buttonRegist
             //Id: `${$('#idTaxi')}`,
             //Registracija: `${$('#registracijaAutomobila')}`,
             //Tip: `${$('#tip')}`,
-            //Mesto: `${$('#mesto')}`,
-            //PozivniBroj: `${$('#pozivniBroj')}`,
-            //BrojKuce: `${$('#brojKuce')}`,
-            //Ulica: `${$('#ulica')}`
+            
         };
 
         $.ajax({
@@ -287,13 +249,17 @@ $(document).off('click', '#kreirajVoznju').on('click', '#kreirajVoznju', functio
     }
 
     if (retVal) {
+        var korisnikJSON = sessionStorage.getItem('korisnik');
+        korisnik = $.parseJSON(korisnikJSON);
+
         let voznja = {
             Ulica: `${$('#ulica').val()}`,
             Broj: `${$('#brojKuce').val()}`,
             PozivniBroj: `${$('#pozivniBroj').val()}`,
             Mesto: `${$('#mesto').val()}`,
             KorisnickoImeV: `${$('#korisnickoImeV').val()}`,
-            TipVozila: `${$('#tip').val()}`
+            TipVozila: `${$('#tip').val()}`,
+            KorisnickoIme: korisnik.KorisnickoIme
         };
 
         $.ajax({

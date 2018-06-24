@@ -17,6 +17,7 @@ namespace TaxiSluzbaWebApi.Controllers
         [Route("KreirajVoznju")]
         public HttpResponseMessage KreirajVoznju([FromBody]JToken jToken)
         {
+            var korisnickoIme = jToken.Value<string>("KorisnickoIme");
             var ulica = jToken.Value<string>("Ulica");
             var broj = jToken.Value<string>("Broj");
             var mesto = jToken.Value<string>("Mesto");
@@ -32,6 +33,12 @@ namespace TaxiSluzbaWebApi.Controllers
             {
                 tipVozila = Models.Enum.TipAutomobila.Kombi;
             }
+
+            if (BazaPodataka.Instanca.NadjiMusteriju(korisnickoIme) == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized);
+            }
+
             if (ulica == null || broj == null || mesto == null || pozivniBroj == null)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
@@ -42,15 +49,19 @@ namespace TaxiSluzbaWebApi.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
-            Voznja novaVoznja = new Voznja();
-            novaVoznja.Lokacija = new Lokacija();
+            Voznja novaVoznja = new Voznja
+            {
+                Lokacija = new Lokacija()
+            };
             novaVoznja.Lokacija.Adresa.Ulica = ulica;
             novaVoznja.Lokacija.Adresa.Broj = broj;
             novaVoznja.Lokacija.Adresa.NasenjenoMesto = mesto;
             novaVoznja.Lokacija.Adresa.PozivniBroj = pozivniBroj;
             novaVoznja.TipAutomobila = tipVozila;
             novaVoznja.StatusVoznje = Models.Enum.StatusVoznje.Kreirana;
-
+            novaVoznja.Musterija = new Musterija();
+            novaVoznja.Musterija = BazaPodataka.Instanca.NadjiMusteriju(korisnickoIme);
+            
 
             if (HttpContext.Current.Application["noveVoznje"] == null)
             {

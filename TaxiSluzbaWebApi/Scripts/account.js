@@ -60,8 +60,27 @@ $(document).on('click', '#change', function () {
 });
 
 $(document).on('click', '#logout', function () { 
-        sessionStorage.setItem('korisnik', null);
-        window.location.href = "Index.html";
+    var korisnikJSON = sessionStorage.getItem('korisnik');
+    var korisnik = $.parseJSON(korisnikJSON);
+
+    
+
+    $.ajax({
+        type: 'DELETE',
+        url: 'api/Korisnik/LogOut',
+        data: JSON.stringify(korisnik),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                sessionStorage.setItem('korisnik', null);
+                window.location.href = "Index.html";
+            } else {
+                $('.mainView').html("");
+                $('.mainView').append("<h1>GRESKA NA SERVERU!</h1>");
+            }
+        }
+    });
 });
 
 $(document).off('click', '#buttonEdit').on('click', '#buttonEdit', function () {
@@ -150,7 +169,6 @@ $(document).off('click', '#buttonEdit').on('click', '#buttonEdit', function () {
                 }
             }
         });
-        return false;
     }
 });
 
