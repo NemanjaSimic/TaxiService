@@ -130,7 +130,8 @@ namespace TaxiSluzbaWebApi.Models
                         Vozac = new Vozac(),
                         Komentar = new Komentar(),
                         Musterija = new Musterija(),
-                        Odrediste = new Lokacija(),                       
+                        Odrediste = new Lokacija(), 
+                        Dispecer = new Dispecer()
                     };
                     string[] parametri = informacije.Split(';');                   
                     voznja.ID = id++;
@@ -171,7 +172,14 @@ namespace TaxiSluzbaWebApi.Models
                     {
                         voznja.Vozac = BazaPodataka.Instanca.NadjiVozaca(parametri[12]);
                     }
-                    voznja.StatusVoznje = Enum.StatusVoznje.Uspesna;
+                    Int32.TryParse(parametri[13], out int iznos);
+                    voznja.Iznos = iznos;
+                    Int32.TryParse(parametri[14], out int kom);
+                    if (kom > 0)
+                    {
+                        voznja.Komentar.ID = kom;
+                    }
+                    voznja.StatusVoznje =(Enum.StatusVoznje)System.Enum.Parse(typeof(Enum.StatusVoznje), parametri[15]);
 
                     Voznje.Add(voznja);
                 }
@@ -376,7 +384,7 @@ namespace TaxiSluzbaWebApi.Models
                         }
                         if (item.Iznos <= 0)
                         {
-                            tw.Write("");
+                            tw.Write("0");
                             tw.Write(";");
                         }
                         else
@@ -386,7 +394,7 @@ namespace TaxiSluzbaWebApi.Models
                         }
                         if (item.Komentar == null)
                         {
-                            tw.Write("");
+                            tw.Write("0");
                             tw.Write(";");
                         }
                         else

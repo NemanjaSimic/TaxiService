@@ -191,19 +191,28 @@ $(document).off('click', '#buttonRegistracijaVozaca').on('click', '#buttonRegist
 });
 
 $(document).on('click', '#formirajVoznju', function () {
-    $('.mainView').html("");
-    let informations = '<table><tr><td>Ulica:</td><td><input type="text" id="ulica" placeholder="npr.Bulevar Oslobodjenja" autocomplete="off" /></td></tr>';
-    informations += '<tr><td>Broj kuce/zgrade:</td><td><input type="text" id="brojKuce" placeholder="npr.147" autocomplete="off" /></td></tr>';
-    informations += '<tr><td>Naseljeno mesto:</td><td><input type="text" id="mesto" placeholder="npr.Novi Sad" autocomplete="off" /></td></tr>';
-    informations += '<tr><td>Postanski broj:</td><td><input type="text" id="pozivniBroj" placeholder="npr.21000" autocomplete="off" /></td></tr>';
-    informations += '<tr><td>Zeljeni tip vozila:</td><td><select id="tip"><option value="0">-</option><option value="1">Putnicki</option><option value="2">Kombi</option></select></td></tr>';
-    informations += '<tr><td>Korisnicko ime vozaca:</td><td><input type="text" id="korisnickoImeV" placeholder="npr.Vozac123" autocomplete="off" /></td></tr>';
-    informations += '<tr><td></td><td><button id="kreirajVoznju">Kreiraj voznju</ button></td></tr></table>';
-    informations += '<div id="regVal"></div>';
-    $('.mainView').html(informations);
+    var korisnikJSON = sessionStorage.getItem('korisnik');
+    var korisnik = $.parseJSON(korisnikJSON);
+
+    $.ajax({
+        type: 'GET',
+        url: 'api/Dispecer/Voznja/' + korisnik.KorisnickoIme,
+        //data: JSON.stringify(korisnik),
+        //contentType: 'application/json; charset=utf-8',
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                $('.mainView').html("");
+                $('.mainView').append(data.responseText);
+            } else {
+                $('.mainView').html("");
+                $('.mainView').append("<h1>GRESKA NA SERVERU!</h1>");
+            }
+        }
+    });
 });
 
-$(document).off('click', '#kreirajVoznju').on('click', '#kreirajVoznju', function () {
+$(document).off('click', '#kreirajVoznjuD').on('click', '#kreirajVoznjuD', function () {
     var retVal = true;
     $('#regVal').html("");
 
@@ -259,6 +268,7 @@ $(document).off('click', '#kreirajVoznju').on('click', '#kreirajVoznju', functio
             Mesto: `${$('#mesto').val()}`,
             KorisnickoImeV: `${$('#korisnickoImeV').val()}`,
             TipVozila: `${$('#tip').val()}`,
+            Vozac: `${$('#vozac').val()}`,
             KorisnickoIme: korisnik.KorisnickoIme
         };
 

@@ -68,7 +68,10 @@ namespace TaxiSluzbaWebApi.Controllers
 
             Voznja novaVoznja = new Voznja
             {
-                Lokacija = new Lokacija()
+                Lokacija = new Lokacija(),
+                Dispecer = new Dispecer(),
+                Musterija = new Musterija(),
+                Odrediste = new Lokacija()
             };
             novaVoznja.Lokacija.Adresa.Ulica = ulica;
             novaVoznja.Lokacija.Adresa.Broj = broj;
@@ -76,7 +79,6 @@ namespace TaxiSluzbaWebApi.Controllers
             novaVoznja.Lokacija.Adresa.PozivniBroj = pozivniBroj;
             novaVoznja.TipAutomobila = tipVozila;
             novaVoznja.StatusVoznje = Models.Enum.StatusVoznje.Kreirana;
-            novaVoznja.Musterija = new Musterija();
             novaVoznja.Musterija = BazaPodataka.Instanca.NadjiMusteriju(korisnickoIme);
             novaVoznja.DatumVremePoruzbine = DateTime.Now;         
             novaVoznja.ID = BazaPodataka.Instanca.Voznje.Count + 1;

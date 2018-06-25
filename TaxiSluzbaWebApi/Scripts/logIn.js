@@ -41,14 +41,14 @@ function LogIn(user,refresh) {
         dataType: 'html',
         complete: function (data) {
             if (data.status === 200) {
-                $('.mainView').html('<div><button id="prikazVoznji">Osvezi voznje</button><div>');
+                GetRides(korisnik);
                 $('.header').append(data.responseText);
                 sessionStorage.setItem('korisnik', JSON.stringify(korisnik));
                 $('#korImeVal').html("");
                 //$.ajax({
                 //    url: "Scripts/account.js",
                 //    dataType: "script"
-                //});
+                //});        
             } else if (data.status === 401) {
                 DobarUsername();
                 PogresnaSifra();
@@ -60,6 +60,19 @@ function LogIn(user,refresh) {
             } else {
                 $('.mainView').html('<h1>Greska na serveru!</h1>');
             }
+        }
+    });
+}
+
+function GetRides(korisnik) {
+    $.ajax({
+        type: 'GET',
+        url: 'api/Korisnik/Voznje',
+        data: JSON.stringify(korisnik),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'html',
+        complete: function (data) {
+            $('.mainView').html(data.responseText);
         }
     });
 }
@@ -78,4 +91,20 @@ $(document).ready(function () {
             LogIn(korisnik,false);                  
     });
 
+
 });
+
+//$(document).on('click', '#ucitaj', function () {
+//    var korisnikJSON = sessionStorage.getItem('korisnik');
+//    var korisnik = $.parseJSON(korisnikJSON);
+//    $.ajax({
+//        type: 'GET',
+//        url: 'api/Korisnik/Voznje',
+//        data: JSON.stringify(korisnik),
+//        contentType: 'application/json; charset=utf-8',
+//        dataType: 'html',
+//        complete: function (data) {
+//            $('.voznje').append(data.responseText);
+//        }
+//    });
+//});

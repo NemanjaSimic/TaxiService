@@ -131,7 +131,7 @@ $(document).on('click', '#promeniStatus', function () {
 
         if ($('#brojO').val() === "") {
             retVal = false;
-            $('#regVal').append('<label>Polje ID vozila automobila je obavezno!</label><br/>');
+            $('#regVal').append('<label>Polje broj kuce je obavezno!</label><br/>');
         } else {
             let input = $('#brojO').val();
             let pattern = /^\b\d{1,4}\b$/i;
@@ -139,6 +139,19 @@ $(document).on('click', '#promeniStatus', function () {
             if (!pattern.test(input)) {
                 retVal = false;
                 $('#regVal').append('<label>Polje broj kuce nije u validnom formatu!</label><br/>');
+            }
+        }
+
+        if ($('#iznos').val() === "") {
+            retVal = false;
+            $('#regVal').append('<label>Polje iznos je obavezno!</label><br/>');
+        } else {
+            let input = $('#iznos').val();
+            let pattern = /^\b\d{1,6}\b$/i;
+
+            if (!pattern.test(input)) {
+                retVal = false;
+                $('#regVal').append('<label>Polje iznos nije u validnom formatu!</label><br/>');
             }
         }
 
@@ -180,6 +193,12 @@ $(document).on('click', '#promeniStatus', function () {
             retVal = false;
             $('#regVal').html('<label>Polje moraju biti prazna! Status voznje je neuspesna!</label><br/>');
         }
+
+        if ($('#pozivniBrojO').val() !== "") {
+            retVal = false;
+            $('#regVal').append('<label>Polje pozivni broj je obavezno!</label><br/>');
+        }
+
     }
     if (retVal) {
         var korisnikJSON = sessionStorage.getItem('korisnik');
@@ -190,6 +209,7 @@ $(document).on('click', '#promeniStatus', function () {
             PozivniBroj: `${$('#pozivniBrojO').val()}`,
             BrojKuce: `${$('#brojO').val()}`,
             Ulica: `${$('#ulicaO').val()}`,
+            Iznos: `${$('#iznos').val()}`,
             KorisnickoIme: korisnik.KorisnickoIme,
             Status: `${$('#statusV').val()}`,
             ID: `${$('#promeniStatus').val()}`
@@ -256,7 +276,7 @@ $(document).off('click', '.obradiV').on('click', '.obradiV', function () {
             if (data.status === 200) {
                 $('.mainView').html(data.responseText);
             } else {
-                $('.mainView').html("data.responseText");
+                $('.mainView').html(data.responseText);
             }
         }
     });
