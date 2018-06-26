@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Http;
 using TaxiSluzbaWebApi.Models;
@@ -66,6 +67,28 @@ namespace TaxiSluzbaWebApi.Controllers
                 return response;
             }
 
+            var input = pozivniBroj;
+            var pattern = new Regex(@"\d{4,8}");
+            var match = pattern.Match(input);
+            if (!match.Success)
+            {
+                response.Content = new StringContent("Los zahtev!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+
+            input = broj;
+            pattern = new Regex(@"\d{1,4}");
+            match = pattern.Match(input);
+            if (!match.Success)
+            {
+                response.Content = new StringContent("Los zahtev!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+
             Voznja novaVoznja = new Voznja
             {
                 Lokacija = new Lokacija(),
@@ -86,7 +109,166 @@ namespace TaxiSluzbaWebApi.Controllers
 
             return Request.CreateResponse(HttpStatusCode.OK);
         }
-        
 
+        [HttpDelete]
+        [Route("OtkaziVoznju")]
+        public HttpResponseMessage OtkaziVoznju([FromBody]JToken jToken)
+        {
+            var korisnickoIme = jToken.Value<string>("KorisnickoIme");
+            if(!Int32.TryParse(jToken.Value<string>("Id"),out int id))
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+                       
+            if (korisnickoIme == null )
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+
+            if (korisnickoIme == "")
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+            var response = new HttpResponseMessage();
+            var ulogovani = (List<User>)HttpContext.Current.Application["ulogovani"];
+            if (ulogovani == null)
+            {
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+            else if (ulogovani.Find(u => u.KorisnickoIme.Equals(korisnickoIme)) == null)
+            {
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+            else if (ulogovani.Find(u => u.KorisnickoIme.Equals(korisnickoIme)).Uloga != Models.Enum.Uloga.Musterija)
+            {
+                response.StatusCode = HttpStatusCode.Unauthorized;
+                return response;
+            }
+
+            var voznja = BazaPodataka.Instanca.Voznje.Find(v => v.ID == id);
+            if (voznja == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+            if (voznja.StatusVoznje != Models.Enum.StatusVoznje.Kreirana)
+            {
+                return Request.CreateResponse(HttpStatusCode.Conflict);
+            }
+
+            BazaPodataka.Instanca.Voznje.Remove(voznja);
+            return Request.CreateResponse(HttpStatusCode.OK);
+        }
+        [HttpPut]
+        [Route("IzmeniVoznju")]
+        public HttpResponseMessage IzmeniVoznju([FromBody]JToken jToken)
+        {
+            var KorisnickoIme = jToken.Value<string>("KorisnickoIme");
+            var Ulica = jToken.Value<string>("Ulica");
+            var Broj = jToken.Value<string>("Broj");
+            var Mesto = jToken.Value<string>("Mesto");
+            var PozivniBroj = jToken.Value<string>("PozivniBroj");
+
+            var response = new HttpResponseMessage();
+            if (Mesto == null || Ulica == null || Broj == null || PozivniBroj == null || KorisnickoIme == null)
+            {
+                response.Content = new StringContent("<label>Greska na serveru</label>");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+
+            if (Mesto == "" || Ulica == "" || Broj == "" || PozivniBroj == "" || KorisnickoIme == "")
+            {
+                response.Content = new StringContent("<label>Los zahtev!</label>");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+
+            var input = PozivniBroj;
+            var pattern = new Regex(@"\d{4,8}");
+            var match = pattern.Match(input);
+            if (!match.Success)
+            {
+                response.Content = new StringContent("Los zahtev!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+
+            input = Broj;
+            pattern = new Regex(@"\d{1,4}");
+            match = pattern.Match(input);
+            if (!match.Success)
+            {
+                response.Content = new StringContent("Los zahtev!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+
+            var ulogovani = (List<User>)HttpContext.Current.Application["ulogovani"];
+            if (ulogovani == null)
+            {
+                response.Content = new StringContent("<label>Greska na serveru</label>");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+            else if (ulogovani.Find(u => u.KorisnickoIme.Equals(KorisnickoIme)) == null)
+            {
+                response.Content = new StringContent("<label>Niste ulogovani!</label>");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+            else if (ulogovani.Find(u => u.KorisnickoIme.Equals(KorisnickoIme)).Uloga != Models.Enum.Uloga.Musterija)
+            {
+                response.Content = new StringContent("<label>Niste autorizovani za ovu opciju!</label>");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+            var voznja = new Voznja();
+            foreach (var item in BazaPodataka.Instanca.Voznje)
+            {
+                if(item.Musterija != null)
+                {
+                    if(item.Musterija.KorisnickoIme != null)
+                    {
+                        if (item.Musterija.KorisnickoIme.Equals(KorisnickoIme) && item.StatusVoznje == Models.Enum.StatusVoznje.Kreirana)
+                            voznja = item;
+                    }
+                }
+            }
+
+            if (voznja == null)
+            {
+                response.Content = new StringContent("<label>Voznja je prihvacena u medjuvremenu!</label>");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+            if (voznja.StatusVoznje != Models.Enum.StatusVoznje.Kreirana)
+            {
+                response.Content = new StringContent("<label>Voznja je prihvacena u medjuvremenu!</label>");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+
+            BazaPodataka.Instanca.Voznje.Remove(voznja);
+            voznja.Lokacija.Adresa.Ulica = Ulica;
+            voznja.Lokacija.Adresa.Broj = Broj;
+            voznja.Lokacija.Adresa.NasenjenoMesto = Mesto;
+            voznja.Lokacija.Adresa.PozivniBroj = PozivniBroj;
+            BazaPodataka.Instanca.Voznje.Add(voznja);
+            response.Content = new StringContent("");
+            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+            response.StatusCode = HttpStatusCode.OK;
+            return response;
+        }
     }
 }

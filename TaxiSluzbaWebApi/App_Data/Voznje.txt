@@ -1,5 +1,0 @@
-25-Jun-18 11:27:24;Bulevar Oslobodjenja;147;Novi Sad;21000;BezNaznake;Nile;Micurinova;36;Novi Sad;21000;;Nina;0;0;Uspesna
-25-Jun-18 11:40:48;Kornelija Stankovica;15;Novi Sad;21000;BezNaznake;Nile;;;;;;Nina;0;0;Neuspesna
-25-Jun-18 15:28:28;aasdsd;223;asdsad;1214;BezNaznake;Nile;;;;;nina;Nina;0;0;Neuspesna
-25-Jun-18 15:33:47;NINAAAAA;147;ns;21000;BezNaznake;Nile;;;;;;Nina;0;0;Neuspesna
-25-Jun-18 18:11:50;Bulevar;147;NS;21000;Putnicki;;;;;;nina;Nina;0;0;Neuspesna

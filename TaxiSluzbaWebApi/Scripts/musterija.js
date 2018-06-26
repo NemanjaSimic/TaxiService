@@ -1,4 +1,7 @@
-﻿$(document).on('click', '#request', function () {
+﻿korisnikJSON = sessionStorage.getItem('korisnik');
+korisnik = $.parseJSON(korisnikJSON);
+
+$(document).on('click', '#request', function () {
     $('.mainView').html("");
     let informations = '<table><tr><td>Ulica:</td><td><input type="text" id="ulica" placeholder="npr.Bulevar Oslobodjenja" autocomplete="off" /></td></tr>';
     informations += '<tr><td>Broj kuce/zgrade:</td><td><input type="text" id="brojKuce" placeholder="npr.147" autocomplete="off" /></td></tr>';
@@ -88,5 +91,106 @@ $(document).off('click', '#kreirajVoznju').on('click', '#kreirajVoznju', functio
     }
 });
 
+$(document).on('click', '#otkaziVoznju', function () {
+    
+    let voznja = {
+        Id: `${$(this).val()}`,
+        KorisnickoIme: korisnik.KorisnickoIme
+    };
+    $.ajax({
+        type: 'DELETE',
+        url: '/api/Musterija/OtkaziVoznju',
+        data: JSON.stringify(voznja),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                $('.mainView').html('<label>Voznja uspesno otkazana!</label><br/>');               
+            } else if (data.status === 409) {
+                $('.mainView').html('<label>Voznja je prihvacena u medjuvremenu!</label><br/>');  
+            } else if (data.status === 401) {
+                $('.mainView').html('<label>Niste autorizovani za ovu radnju!</label><br/>');
+            } else if (data.status === 403) {
+                $('.mainView').html('<label>Niste ulogovani!</label><br/>');
+            }
+            else {
+                $('#regVal').append('<label>Greska na serveru!</label><br/>');
+            }
+        }
+    });
 
+});
+
+$(document).on('click', '#izmeniVoznju', function () {
+    var retVal = true;
+    $('#regVal').html("");
+
+    if ($('#ulicaM').val() === "") {
+        retVal = false;
+        $('#regVal').append('<label>Polje ulica je obavezno!</label><br/>');
+    }
+
+    if ($('#brojKuceM').val() === "") {
+        retVal = false;
+        $('#regVal').append('<label>Polje ID vozila automobila je obavezno!</label><br/>');
+    } else {
+        let input = $('#brojKuceM').val();
+        let pattern = /^\b\d{1,4}\b$/i;
+
+        if (!pattern.test(input)) {
+            retVal = false;
+            $('#regVal').append('<label>Polje broj kuce nije u validnom formatu!</label><br/>');
+        }
+    }
+
+    if ($('#pozivniBrojM').val() === "") {
+        retVal = false;
+        $('#regVal').append('<label>Polje pozivni broj je obavezno!</label><br/>');
+    } else {
+        let input = $('#pozivniBrojM').val();
+        let pattern = /^\b\d{4,8}\b$/i;
+
+        if (!pattern.test(input)) {
+            retVal = false;
+            $('#regVal').append('<label>Polje pozivni broj nije u validnom formatu!</label><br/>');
+        }
+    }
+
+    if ($('#mestoM').val() === "") {
+        retVal = false;
+        $('#regVal').append('<label>Polje naseljeno mesto je obavezno!</label><br/>');
+    }
+
+    if (retVal) {
+        let voznja = {
+            Id: `${$(this).val()}`,
+            Ulica: `${$('#ulicaM').val()}`,
+            Broj: `${$('#brojKuceM').val()}`,
+            PozivniBroj: `${$('#pozivniBrojM').val()}`,
+            Mesto: `${$('#mestoM').val()}`,
+            KorisnickoIme: korisnik.KorisnickoIme
+        };
+        $.ajax({
+            type: 'PUT',
+            url: '/api/Musterija/IzmeniVoznju',
+            data: JSON.stringify(voznja),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'html',
+            complete: function (data) {
+                if (data.status === 200) {
+                    $('.mainView').html('<label>Voznja uspesno izmenjena</label><br/>');
+                } else if (data.status === 409) {
+                    $('.mainView').html('<label>Voznja je prihvacena u medjuvremenu!</label><br/>');
+                } else if (data.status === 401) {
+                    $('.mainView').html('<label>Niste autorizovani za ovu radnju!</label><br/>');
+                } else if (data.status === 403) {
+                    $('.mainView').html('<label>Niste ulogovani!</label><br/>');
+                }
+                else {
+                    $('#regVal').append('<label>Greska na serveru!</label><br/>');
+                }
+            }
+        });
+    }
+});
 

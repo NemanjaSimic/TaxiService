@@ -39,37 +39,25 @@ namespace TaxiSluzbaWebApi.Controllers
             else
             {
                 noviVozac.Pol = Models.Enum.Pol.Zenski;
-            }          
+            }
 
-            //Automobil auto = new Automobil();
-            //auto.Vozac = new Vozac();
-            //auto.Vozac = noviVozac;
-            //auto.Godiste = jToken.Value<string>("GodisteAutomobila");
-            //auto.BrojTaksiVozila = jToken.Value<string>("Id");
-            //auto.BrojRegistarskeOznake = jToken.Value<string>("Registracija");
-            //Int32.TryParse(jToken.Value<string>("Tip"), out int t);
-            //if (t == 1)
-            //{
-            //    auto.TipAutomobila = Models.Enum.TipAutomobila.Putnicki;
-            //}
-            //else
-            //{
-            //    auto.TipAutomobila = Models.Enum.TipAutomobila.Kombi;
-            //}
+            Automobil auto = new Automobil();
+            auto.Vozac = new Vozac();
+            auto.Vozac = noviVozac;
+            auto.Godiste = jToken.Value<string>("GodisteAutomobila");
+            auto.BrojTaksiVozila = jToken.Value<string>("Id");
+            auto.BrojRegistarskeOznake = jToken.Value<string>("Registracija");
+            Int32.TryParse(jToken.Value<string>("Tip"), out int t);
+            if (t == 1)
+            {
+                auto.TipAutomobila = Models.Enum.TipAutomobila.Putnicki;
+            }
+            else
+            {
+                auto.TipAutomobila = Models.Enum.TipAutomobila.Kombi;
+            }
 
-            //noviVozac.Automobil = auto;
-
-            //Adresa adresa = new Adresa();
-            //adresa.Broj = jToken.Value<string>("BrojKuce");
-            //adresa.Ulica = jToken.Value<string>("Ulica");
-            //adresa.PozivniBroj = jToken.Value<string>("PozivniBroj");
-            //adresa.NasenjenoMesto = jToken.Value<string>("Mesto");
-
-            //Lokacija lokacija = new Lokacija();
-            //lokacija.Adresa = adresa;
-
-            //noviVozac.Lokacija = lokacija;
-
+            
             if (noviVozac.Ime == null || noviVozac.Prezime == null || noviVozac.JMBG == null ||
                 noviVozac.KontaktTelefon == null || noviVozac.KorisnickoIme == null || noviVozac.Sifra == null || noviVozac.Email == null)
             {
@@ -81,6 +69,8 @@ namespace TaxiSluzbaWebApi.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
+            noviVozac.Automobil = new Automobil();
+            noviVozac.Automobil = auto;
 
             var input = noviVozac.KontaktTelefon;
             Regex pattern = new Regex(@"\d{8,10}");
@@ -98,29 +88,29 @@ namespace TaxiSluzbaWebApi.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
-            //input = auto.Godiste;
-            //pattern = new Regex(@"\d{4}");
-            //match = pattern.Match(input);
-            //if (!match.Success)
-            //{
-            //    return Request.CreateResponse(HttpStatusCode.BadRequest);
-            //}
+            input = auto.Godiste;
+            pattern = new Regex(@"\d{4}");
+            match = pattern.Match(input);
+            if (!match.Success)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
 
-            //input = auto.BrojRegistarskeOznake;
-            //pattern = new Regex(@"\d{6,8}");
-            //match = pattern.Match(input);
-            //if (!match.Success)
-            //{
-            //    return Request.CreateResponse(HttpStatusCode.BadRequest);
-            //}
+            input = auto.BrojRegistarskeOznake;
+            pattern = new Regex(@"\d{6,8}");
+            match = pattern.Match(input);
+            if (!match.Success)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
 
-            //input = auto.BrojTaksiVozila;
-            //pattern = new Regex(@"\d{4}");
-            //match = pattern.Match(input);
-            //if (!match.Success)
-            //{
-            //    return Request.CreateResponse(HttpStatusCode.BadRequest);
-            //}
+            input = auto.BrojTaksiVozila;
+            pattern = new Regex(@"\d{4}");
+            match = pattern.Match(input);
+            if (!match.Success)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
 
             if (BazaPodataka.Instanca.NadjiDispecera(noviVozac.KorisnickoIme) != null)
             {
@@ -140,7 +130,6 @@ namespace TaxiSluzbaWebApi.Controllers
             BazaPodataka.Instanca.UpisiUBazuVozace();
             return Request.CreateResponse(HttpStatusCode.OK);
         }
-
         [HttpGet]
         [Route("Voznja/{korisnickoIme}")]
         public HttpResponseMessage Voznja(string korisnickoIme)
@@ -178,11 +167,14 @@ namespace TaxiSluzbaWebApi.Controllers
                 return response;
             }
             var listaSlobodnihVozaca = new List<Vozac>();
-            foreach (var item in ulogovani)
+            foreach (var item in BazaPodataka.Instanca.Vozaci)
             {
-                if (item.Uloga == Models.Enum.Uloga.Vozac)
+                if (ulogovani.Find(u => u.KorisnickoIme.Equals(item.KorisnickoIme)) != null)
                 {
-                    listaSlobodnihVozaca.Add(((Vozac)item));
+                    if (!item.Zauzet)
+                    {
+                        listaSlobodnihVozaca.Add(item);
+                    }
                 }
             }
 
@@ -204,7 +196,6 @@ namespace TaxiSluzbaWebApi.Controllers
             response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
             return response;
         }
-
         [HttpPost]
         [Route("KreirajVoznju")]
         public HttpResponseMessage KreirajVoznju([FromBody]JToken jToken)
@@ -269,6 +260,27 @@ namespace TaxiSluzbaWebApi.Controllers
                 response.StatusCode = HttpStatusCode.BadRequest;
                 return response;
             }
+            var input = PozivniBroj;
+            var pattern = new Regex(@"\d{4,8}");
+            var match = pattern.Match(input);
+            if (!match.Success)
+            {
+                response.Content = new StringContent("Los zahtev!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+
+            input = Broj;
+            pattern = new Regex(@"\d{1,4}");
+            match = pattern.Match(input);
+            if (!match.Success)
+            {
+                response.Content = new StringContent("Los zahtev!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
 
             Voznja novaVoznja = new Voznja
             {
@@ -304,14 +316,28 @@ namespace TaxiSluzbaWebApi.Controllers
         {
             var response = new HttpResponseMessage();
             var informations = "";
+
+            var ulogovani = (List<User>)HttpContext.Current.Application["ulogovani"];
+            if (ulogovani == null)
+            {
+                response.Content = new StringContent("Greska na serveru!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+
             var listaSlobodnihVozaca = new List<Vozac>();
             foreach (var item in BazaPodataka.Instanca.Vozaci)
             {
-                if (!item.Zauzet)
+                if (ulogovani.Find(u => u.KorisnickoIme.Equals(item.KorisnickoIme)) != null)
                 {
-                    listaSlobodnihVozaca.Add(item);
+                    if (!item.Zauzet)
+                    {
+                        listaSlobodnihVozaca.Add(item);
+                    }
                 }
             }
+            
             var listaVoznji = new List<Voznja>();
             foreach (var item in BazaPodataka.Instanca.Voznje)
             {

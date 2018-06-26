@@ -102,13 +102,13 @@ namespace TaxiSluzbaWebApi.Models
                         JMBG = parametri[5],
                         KontaktTelefon = parametri[6],
                         Email = parametri[7],
-                        
+                        Automobil = new Automobil()
                     };
-                    //vozac.Lokacija.Adresa.Ulica = parametri[8];
-                    //vozac.Lokacija.Adresa.Broj = parametri[9];
-                    //vozac.Lokacija.Adresa.NasenjenoMesto = parametri[10];
-                    //vozac.Lokacija.Adresa.PozivniBroj = parametri[11];
-
+                   
+                    vozac.Automobil.BrojRegistarskeOznake = parametri[8];
+                    vozac.Automobil.Godiste = parametri[9];
+                    vozac.Automobil.BrojTaksiVozila = parametri[10];
+                    vozac.Automobil.TipAutomobila = (Enum.TipAutomobila)System.Enum.Parse(typeof(Enum.TipAutomobila), parametri[11]);
                     Vozaci.Add(vozac);
                 }
             }
@@ -120,7 +120,10 @@ namespace TaxiSluzbaWebApi.Models
             int id = 1;
             using (TextReader tr = new StreamReader(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiSluzbaWebApi\TaxiService\TaxiSluzbaWebApi\App_Data\Voznje.txt"))
             {
-                Voznja voznja = null;              
+                Voznja voznja = null;
+                var musterija = new Musterija();
+                var dispecer = new Dispecer();
+                var vozac = new Vozac();
                 string informacije = string.Empty;
                 while ((informacije = tr.ReadLine()) != null)
                 {
@@ -155,7 +158,8 @@ namespace TaxiSluzbaWebApi.Models
                     }
                     if (!parametri[6].Equals(""))
                     {
-                        voznja.Musterija = BazaPodataka.Instanca.NadjiMusteriju(parametri[6]);
+                        musterija = BazaPodataka.Instanca.NadjiMusteriju(parametri[6]);
+                        voznja.Musterija = musterija;
                     }
                     voznja.Odrediste.Adresa = new Adresa
                     {
@@ -166,11 +170,13 @@ namespace TaxiSluzbaWebApi.Models
                     };
                     if (!parametri[11].Equals(""))
                     {
-                        voznja.Dispecer = BazaPodataka.Instanca.NadjiDispecera(parametri[11]);
+                        dispecer = BazaPodataka.Instanca.NadjiDispecera(parametri[11]);
+                        voznja.Dispecer = dispecer;
                     }
                     if (!parametri[12].Equals(""))
                     {
-                        voznja.Vozac = BazaPodataka.Instanca.NadjiVozaca(parametri[12]);
+                        vozac = BazaPodataka.Instanca.NadjiVozaca(parametri[12]);
+                        voznja.Vozac = vozac;
                     }
                     Int32.TryParse(parametri[13], out int iznos);
                     voznja.Iznos = iznos;
@@ -180,7 +186,6 @@ namespace TaxiSluzbaWebApi.Models
                         voznja.Komentar.ID = kom;
                     }
                     voznja.StatusVoznje =(Enum.StatusVoznje)System.Enum.Parse(typeof(Enum.StatusVoznje), parametri[15]);
-
                     Voznje.Add(voznja);
                 }
             }
@@ -290,14 +295,14 @@ namespace TaxiSluzbaWebApi.Models
                         tw.Write(item.KontaktTelefon);
                         tw.Write(";");
                         tw.Write(item.Email);
-                        //tw.Write(";");
-                        //tw.Write(item.Lokacija.Adresa.Ulica);
-                        //tw.Write(";");
-                        //tw.Write(item.Lokacija.Adresa.Broj);
-                        //tw.Write(";");
-                        //tw.Write(item.Lokacija.Adresa.NasenjenoMesto);
-                        //tw.Write(";");
-                        //tw.Write(item.Lokacija.Adresa.PozivniBroj);
+                        tw.Write(";");
+                        tw.Write(item.Automobil.BrojRegistarskeOznake);
+                        tw.Write(";");
+                        tw.Write(item.Automobil.Godiste);
+                        tw.Write(";");
+                        tw.Write(item.Automobil.BrojTaksiVozila);
+                        tw.Write(";");
+                        tw.Write(item.Automobil.TipAutomobila.ToString());
                         if (Vozaci.IndexOf(item) != Vozaci.Count() - 1)
                         {
                             tw.Write("\n");
