@@ -105,7 +105,8 @@ $(document).on('click', '#otkaziVoznju', function () {
         dataType: 'html',
         complete: function (data) {
             if (data.status === 200) {
-                $('.mainView').html('<label>Voznja uspesno otkazana!</label><br/>');               
+                $('.mainView').html(data.responseText);
+                $(':button').not('#komentarisiVoznju :button').attr('disabled', true);
             } else if (data.status === 409) {
                 $('.mainView').html('<label>Voznja je prihvacena u medjuvremenu!</label><br/>');  
             } else if (data.status === 401) {
@@ -194,3 +195,38 @@ $(document).on('click', '#izmeniVoznju', function () {
     }
 });
 
+$(document).off('click', '#komentarisiVoznju').on('click', '#komentarisiVoznju', function () {
+    var id = `${$(this).val()}`;
+    var korisnikJSON = sessionStorage.getItem('korisnik');
+    korisnik = $.parseJSON(korisnikJSON);
+
+    var retVal = true;
+
+    if ($('textarea').val() === "") {
+        retVal = false;
+        $('textarea').prop('border-color', 'red');
+    }
+
+    let data = {
+        ID: id,
+        KorisnickoIme: korisnik.KorisnickoIme,
+        Komentar: `${$('textarea').val()}`,
+        Ocena: `${$('#ocena').val()}`
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '/api/Musterija/Komentarisi',
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                window.location.href = "Index.html";
+                $(':button').not('#komentarisiVoznju :button').attr('disabled', false);
+            } else {
+                $('.mainView').html(data.responseText);
+            }
+        }
+    });
+});

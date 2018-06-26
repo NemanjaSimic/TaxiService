@@ -30,9 +30,13 @@ namespace TaxiSluzbaWebApi.Controllers
             {
                 tipVozila = Models.Enum.TipAutomobila.Putnicki;
             }
-            else
+            else if (tip == 2)
             {
                 tipVozila = Models.Enum.TipAutomobila.Kombi;
+            }
+            else
+            {
+                tipVozila = Models.Enum.TipAutomobila.BezNaznake;
             }
 
             if (BazaPodataka.Instanca.NadjiMusteriju(korisnickoIme) == null)
@@ -109,7 +113,6 @@ namespace TaxiSluzbaWebApi.Controllers
 
             return Request.CreateResponse(HttpStatusCode.OK);
         }
-
         [HttpDelete]
         [Route("OtkaziVoznju")]
         public HttpResponseMessage OtkaziVoznju([FromBody]JToken jToken)
@@ -156,9 +159,23 @@ namespace TaxiSluzbaWebApi.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.Conflict);
             }
-
-            BazaPodataka.Instanca.Voznje.Remove(voznja);
-            return Request.CreateResponse(HttpStatusCode.OK);
+            voznja.StatusVoznje = Models.Enum.StatusVoznje.Otkazana;
+            BazaPodataka.Instanca.UpisiUBazuVoznje();
+            var page = "";
+            page += @"<div class=""commentSection"">";
+            page += @"<h2>Komentar je obavezan</h2></br>";
+            page += @"<textarea placeholder=""Komentar voznje...""></textarea></br>";
+            page += @"<label>Ocena:</label><select id=""ocena"">";
+            page += @"<option value=""1"">1</option>";
+            page += @"<option value=""2"">2</option>";
+            page += @"<option value=""3"">3</option>";
+            page += @"<option value=""4"">4</option>";
+            page += @"<option value=""5"">5</option></select></br>";
+            page += String.Format(@"<button id=""komentarisiVoznju"" value=""{0}"">Komentarisi</button></div>", voznja.ID);
+            response.Content = new StringContent(page);
+            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+            response.StatusCode = HttpStatusCode.OK;
+            return response;
         }
         [HttpPut]
         [Route("IzmeniVoznju")]
@@ -266,6 +283,78 @@ namespace TaxiSluzbaWebApi.Controllers
             voznja.Lokacija.Adresa.PozivniBroj = PozivniBroj;
             BazaPodataka.Instanca.Voznje.Add(voznja);
             response.Content = new StringContent("");
+            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+            response.StatusCode = HttpStatusCode.OK;
+            return response;
+        }
+        [HttpPost]
+        [Route("Komentarisi")]
+        public HttpResponseMessage Komentarisi([FromBody]JToken jToken)
+        {
+            var korisnickoIme = jToken.Value<string>("KorisnickoIme");
+            var komentar = jToken.Value<string>("Komentar");
+            Int32.TryParse(jToken.Value<string>("Ocena"), out int ocena);
+            Int32.TryParse(jToken.Value<string>("ID"), out int id);
+            var response = new HttpResponseMessage();
+
+            if (korisnickoIme == null || komentar == null)
+            {
+                response.Content = new StringContent("Los zahtev!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+
+            var ulogovani = (List<User>)HttpContext.Current.Application["ulogovani"];
+            if (ulogovani == null)
+            {
+                response.Content = new StringContent("Zabranjen pristup!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+            else if (ulogovani.Find(u => u.KorisnickoIme.Equals(korisnickoIme)) == null)
+            {
+                response.Content = new StringContent("Zabranjen pristup!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+            else if (ulogovani.Find(u => u.KorisnickoIme.Equals(korisnickoIme)).Uloga != Models.Enum.Uloga.Musterija)
+            {
+                response.Content = new StringContent("Zabranjen pristup!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+
+            
+
+            var voznja = BazaPodataka.Instanca.Voznje.Find(v => v.ID == id);
+
+            if (voznja == null)
+            {
+                response.Content = new StringContent("Greska na serveru!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+
+
+            var kom = new Komentar()
+            {
+                Opis = komentar,
+                Ocena = ocena,
+                Voznja = voznja.ID,
+                DatumObjave = DateTime.Now
+            };
+
+            kom.Korisnik = korisnickoIme;
+
+            voznja.Komentar = new Komentar();
+            voznja.Komentar = kom;
+            BazaPodataka.Instanca.UpisiUBazuVoznje();
+            response.Content = new StringContent("Uspesno ostavljen komentar na voznju!");
             response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
             response.StatusCode = HttpStatusCode.OK;
             return response;

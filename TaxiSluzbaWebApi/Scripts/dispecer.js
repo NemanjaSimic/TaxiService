@@ -179,7 +179,7 @@ $(document).off('click', '#buttonRegistracijaVozaca').on('click', '#buttonRegist
                 $('#regVal').append('<label>Vozac je uspesno registrovan!</label><br/>');
                 IsprazniFormu();
             } else {
-                $('#regVal').append('<label>Greska na serverskoj strani!</label><br/>');
+                $('#regVal').append('<label>' + data.responseText+'</label > <br />');
             }
         });
     }
@@ -201,7 +201,7 @@ $(document).on('click', '#formirajVoznju', function () {
                 $('.mainView').append(data.responseText);
             } else {
                 $('.mainView').html("");
-                $('.mainView').append("<h1>GRESKA NA SERVERU!</h1>");
+                $('.mainView').append("<h1>" + data.responseText+"</h1 > ");
             }
         }
     });
@@ -277,8 +277,8 @@ $(document).off('click', '#kreirajVoznjuD').on('click', '#kreirajVoznjuD', funct
                if (data.status === 200) {
                     $('#regVal').append('<label>Voznja uspeno kreirana</label><br/>');
                     IsprazniFormu();
-                } else {
-                    $('#regVal').append('<label>Los zahtev!(Proverite vozaca)</label><br/>');
+               } else {
+                   $('#regVal').append('<label>' + data.responseText + '</label > <br />');
                 }
             }
         });
@@ -295,7 +295,7 @@ $(document).on('click', '#obradiVoznju', function () {
             if (data.status === 200) {
                 $('.mainView').html(data.responseText);
             } else {
-                $('.mainView').html("<h1>GRESKA NA SERVERU!</h1>");
+                $('.mainView').html("<h1>" + data.responseText + "</h1>");
             }
         }
     });
@@ -323,7 +323,29 @@ $(document).off('click', '.obradi').on('click', '.obradi', function () {
             if (data.status === 200) {
                 $('.mainView').html(data.responseText);
             } else {
-                $('.mainView').html("<h1>GRESKA NA SERVERU!</h1>");
+                $('.mainView').html("<h1>" + data.responseText + "</h1>");
+            }
+        }
+    });
+});
+
+$(document).off('click', '#pregledajVoznje').on('click', '#pregledajVoznje', function () {
+    var korisnikJSON = sessionStorage.getItem('korisnik');
+    var korisnik = $.parseJSON(korisnikJSON);
+
+    $.ajax({
+        type: 'GET',
+        url: 'api/Dispecer/Voznje/' + korisnik.KorisnickoIme,
+        //data: JSON.stringify(korisnik),
+        //contentType: 'application/json; charset=utf-8',
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                $('.mainView').html("");
+                $('.mainView').append(data.responseText);
+            } else {
+                $('.mainView').html("");
+                $('.mainView').append("<h1>" + data.responseText + "</h1 > ");
             }
         }
     });

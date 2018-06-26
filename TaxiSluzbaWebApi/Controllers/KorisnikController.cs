@@ -255,12 +255,21 @@ namespace TaxiSluzbaWebApi.Controllers
                                     informations += String.Format(@"<tr><td>Mesto:</td><td>{0}</td></tr>", item.Lokacija.Adresa.NasenjenoMesto);
                                     informations += String.Format(@"<tr><td>Pozivni broj:</td><td>{0}</td></tr>", item.Lokacija.Adresa.PozivniBroj);
                                     informations += String.Format(@"<tr><td>Status:</td><td>{0}</td></tr>", item.StatusVoznje.ToString());
-                                    informations += String.Format(@"<tr><td>Ulica[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Ulica);
-                                    informations += String.Format(@"<tr><td>Broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Broj);
-                                    informations += String.Format(@"<tr><td>Mesto[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.NasenjenoMesto);
-                                    informations += String.Format(@"<tr><td>Pozivni broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.PozivniBroj);
-                                    informations += String.Format(@"<tr><td>Iznos:</td><td>{0}</td></tr>", item.Iznos);
-                                    //informations += String.Format(@"<tr><td></td><td><button id=""promeniStatus"" value=""{0}"">Sacuvaj</button></td></tr>", item.ID);
+                                    if (item.StatusVoznje == Models.Enum.StatusVoznje.Uspesna)
+                                    {
+                                        informations += String.Format(@"<tr><td>Ulica[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Ulica);
+                                        informations += String.Format(@"<tr><td>Broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Broj);
+                                        informations += String.Format(@"<tr><td>Mesto[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.NasenjenoMesto);
+                                        informations += String.Format(@"<tr><td>Pozivni broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.PozivniBroj);
+                                        informations += String.Format(@"<tr><td>Iznos:</td><td>{0}</td></tr>", item.Iznos);
+                                    }
+                                    if (item.Komentar.Korisnik != null)
+                                    {
+                                        informations += String.Format(@"<tr><td>Komentar:</td><td>{0}</td></tr>", item.Komentar.Opis);
+                                        informations += String.Format(@"<tr><td>Korisnik:</td><td>{0}</td></tr>", item.Komentar.Korisnik);
+                                        informations += String.Format(@"<tr><td>Ocena:</td><td>{0}</td></tr>", item.Komentar.Ocena.ToString());
+                                        informations += String.Format(@"<tr><td>Datum komentara:</td><td>{0}</td></tr>", item.Komentar.DatumObjave.ToString());
+                                    }                                  
                                     informations += "</table>";
 
                                 }
@@ -299,12 +308,21 @@ namespace TaxiSluzbaWebApi.Controllers
                                 informations += String.Format(@"<tr><td>Mesto:</td><td>{0}</td></tr>", item.Lokacija.Adresa.NasenjenoMesto);
                                 informations += String.Format(@"<tr><td>Pozivni broj:</td><td>{0}</td></tr>", item.Lokacija.Adresa.PozivniBroj);
                                 informations += String.Format(@"<tr><td>Status:</td><td>{0}</td></tr>", item.StatusVoznje.ToString());
-                                informations += String.Format(@"<tr><td>Ulica[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Ulica);
-                                informations += String.Format(@"<tr><td>Broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Broj);
-                                informations += String.Format(@"<tr><td>Mesto[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.NasenjenoMesto);
-                                informations += String.Format(@"<tr><td>Pozivni broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.PozivniBroj);
-                                informations += String.Format(@"<tr><td>Iznos:</td><td>{0}</td></tr>", item.Iznos);
-                                //informations += String.Format(@"<tr><td></td><td><button id=""promeniStatus"" value=""{0}"">Sacuvaj</button></td></tr>", item.ID);
+                                if(item.StatusVoznje == Models.Enum.StatusVoznje.Uspesna)
+                                {
+                                    informations += String.Format(@"<tr><td>Ulica[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Ulica);
+                                    informations += String.Format(@"<tr><td>Broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Broj);
+                                    informations += String.Format(@"<tr><td>Mesto[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.NasenjenoMesto);
+                                    informations += String.Format(@"<tr><td>Pozivni broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.PozivniBroj);
+                                    informations += String.Format(@"<tr><td>Iznos:</td><td>{0}</td></tr>", item.Iznos);
+                                }
+                                if (item.Komentar.Korisnik != null)
+                                {
+                                    informations += String.Format(@"<tr><td>Komentar:</td><td>{0}</td></tr>", item.Komentar.Opis);
+                                    informations += String.Format(@"<tr><td>Korisnik:</td><td>{0}</td></tr>", item.Komentar.Korisnik);
+                                    informations += String.Format(@"<tr><td>Ocena:</td><td>{0}</td></tr>", item.Komentar.Ocena.ToString());
+                                    informations += String.Format(@"<tr><td>Datum komentara:</td><td>{0}</td></tr>", item.Komentar.DatumObjave.ToString());
+                                }
                                 informations += "</table>";
                             }
                         }
@@ -362,8 +380,26 @@ namespace TaxiSluzbaWebApi.Controllers
                                     informations += String.Format(@"<tr><td>Mesto[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.NasenjenoMesto);
                                     informations += String.Format(@"<tr><td>Pozivni broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.PozivniBroj);
                                     informations += String.Format(@"<tr><td>Iznos:</td><td>{0}</td></tr>", item.Iznos);
-                                }                             
-                                informations += String.Format(@"<tr><td></td><td><button id=""promeniStatus"" value=""{0}"">Detalji</button></td></tr>", item.ID);
+                                }
+                                if (item.Komentar.Korisnik != null)
+                                {
+                                    informations += String.Format(@"<tr><td>Komentar:</td><td>{0}</td></tr>", item.Komentar.Opis);
+                                    informations += String.Format(@"<tr><td>Korisnik:</td><td>{0}</td></tr>", item.Komentar.Korisnik);
+                                    informations += String.Format(@"<tr><td>Ocena:</td><td>{0}</td></tr>", item.Komentar.Ocena.ToString());
+                                    informations += String.Format(@"<tr><td>Datum komentara:</td><td>{0}</td></tr>", item.Komentar.DatumObjave.ToString());
+                                }
+                                else
+                                {
+                                    informations += String.Format(@"<tr><td>Komentar:</td><td><textarea placeholder=""Komentar voznje...""></textarea></td></tr>");                                  
+                                    informations += String.Format(@"<tr><td>Ocena:</td><td>");
+                                    informations += @"<select id=""ocena"">";
+                                    informations += @"<option value=""1"">1</option>";
+                                    informations += @"<option value=""2"">2</option>";
+                                    informations += @"<option value=""3"">3</option>";
+                                    informations += @"<option value=""4"">4</option>";
+                                    informations += @"<option value=""5"">5</option></select></td></tr>";
+                                    informations += String.Format(@"<tr><td></td><td><button id=""komentarisiVoznju"" value=""{0}"">Ostavi komentar</button></td></tr>", item.ID);
+                                }                                
                                 informations += "</table>";
                             }
                         }

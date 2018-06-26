@@ -222,13 +222,11 @@ $(document).on('click', '#promeniStatus', function () {
             contentType: 'application/json; charset=utf-8',
             dataType: 'html',
             complete: function (data) {
-                if (data.status === 200) {
-                    $('.mainView').html("");
-                    $('.mainView').append(data.responseText);
-                } else {
-                    $('.mainView').html("");
-                    $('.mainView').append("<h1>GRESKA NA SERVERU!</h1>");
+                if (data.status === 302) {
+                    $(':button').not('#komentarisi :button').attr('disabled', true);
                 }
+                $('.mainView').html("");
+                $('.mainView').append(data.responseText);
             }
         });
     }
@@ -275,6 +273,36 @@ $(document).off('click', '.obradiV').on('click', '.obradiV', function () {
         complete: function (data) {
             if (data.status === 200) {
                 $('.mainView').html(data.responseText);
+            } else {
+                $('.mainView').html(data.responseText);
+            }
+        }
+    });
+});
+
+$(document).off('click', '#komentarisi').on('click', '#komentarisi', function () {
+    var id = `${$(this).val()}`;
+    var korisnikJSON = sessionStorage.getItem('korisnik');
+    korisnik = $.parseJSON(korisnikJSON);
+
+
+    let data = {
+        ID: id,
+        KorisnickoIme: korisnik.KorisnickoIme,
+        Komentar: `${$('textarea').val()}`,
+        Ocena: `${$('#ocena').val()}`
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '/api/Vozac/Komentarisi',
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                $('.mainView').html(data.responseText);
+                $(':button').not('#komentarisi :button').attr('disabled', false);
             } else {
                 $('.mainView').html(data.responseText);
             }

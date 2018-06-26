@@ -206,7 +206,7 @@ namespace TaxiSluzbaWebApi.Controllers
             var Broj = jToken.Value<string>("Broj");
             var PozivniBroj = jToken.Value<string>("PozivniBroj");
             var KorisnickoImeV = jToken.Value<string>("KorisnickoImeV");
-            var TipVozila = Models.Enum.TipAutomobila.BezNaznake;
+            var TipVozila = (Models.Enum.TipAutomobila)System.Enum.Parse(typeof(Models.Enum.TipAutomobila),jToken.Value<string>("TipVozila"));
             var vozac = jToken.Value<string>("Vozac");
             var response = new HttpResponseMessage();
             Int32.TryParse(jToken.Value<string>("TipVozila"), out int t);
@@ -281,6 +281,36 @@ namespace TaxiSluzbaWebApi.Controllers
                 response.StatusCode = HttpStatusCode.BadRequest;
                 return response;
             }
+            var vozacTemp = BazaPodataka.Instanca.Vozaci.Find(v => v.KorisnickoIme.Equals(vozac));
+            if (vozacTemp == null)
+            {
+                response.Content = new StringContent("Los zahtev!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+            else if (vozacTemp.Automobil.TipAutomobila != TipVozila && TipVozila != Models.Enum.TipAutomobila.BezNaznake)
+            {
+                response.Content = new StringContent("Los zahtev!Vozac ne vozi zadati tip automobila!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+            else if (vozacTemp.Zauzet)
+            {
+                response.Content = new StringContent("Vozac je u medjuvremenu prihvatio drugu voznju!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Conflict;
+                return response;
+            }
+            else if (ulogovani.Find(v => v.KorisnickoIme.Equals(vozac)) == null)
+            {
+                response.Content = new StringContent("Vozac se u medjuvremenu odjavio!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Conflict;
+                return response;
+            }
+
 
             Voznja novaVoznja = new Voznja
             {
@@ -295,7 +325,6 @@ namespace TaxiSluzbaWebApi.Controllers
                 PozivniBroj = PozivniBroj,
                 Ulica = Ulica
             };
-            var vozacTemp = BazaPodataka.Instanca.Vozaci.Find(v => v.KorisnickoIme.Equals(vozac));
             BazaPodataka.Instanca.Vozaci.Remove(vozacTemp);
             vozacTemp.Zauzet = true;
             BazaPodataka.Instanca.Vozaci.Add(vozacTemp);
@@ -308,7 +337,7 @@ namespace TaxiSluzbaWebApi.Controllers
             novaVoznja.Vozac = vozacTemp;
             BazaPodataka.Instanca.Voznje.Add(novaVoznja);
 
-            return Request.CreateResponse(HttpStatusCode.OK,novaVoznja);
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
         [HttpGet]
         [Route("Obradi")]
@@ -361,7 +390,10 @@ namespace TaxiSluzbaWebApi.Controllers
                     informations += String.Format(@"<tr><td>Izaberite vozaca:</td><td><select id=""idVozaca"">");
                     foreach (var v in listaSlobodnihVozaca)
                     {
-                        informations += String.Format(@"<option val=""{0}"">{1}</option>", v.KorisnickoIme, v.KorisnickoIme);
+                        if (v.Automobil.TipAutomobila == item.TipAutomobila || item.TipAutomobila == Models.Enum.TipAutomobila.BezNaznake)
+                        {
+                            informations += String.Format(@"<option val=""{0}"">{1}</option>", v.KorisnickoIme, v.KorisnickoIme);
+                        }                    
                     }
                     informations += String.Format(@"</select></td></tr>");
                     informations += String.Format(@"<tr><td></td><td><button class=""obradi"" value=""{0}"">Obradi voznju</button></td></tr>", item.ID);
@@ -409,45 +441,13 @@ namespace TaxiSluzbaWebApi.Controllers
                 return response;
             }
 
-            Int32.TryParse(Id, out int id);
-            var vozacTemp = BazaPodataka.Instanca.Vozaci.Find(v => v.KorisnickoIme.Equals(vozac));
-            if (vozacTemp == null)
-            {
-                response.Content = new StringContent("Greska na serveru!");
-                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-                response.StatusCode = HttpStatusCode.BadRequest;
-                return response;
-            }
-
-            if (vozacTemp.Zauzet)
-            {
-                response.Content = new StringContent("Vozac je u medjuvremenu prihvatio drugu voznju!");
-                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-                response.StatusCode = HttpStatusCode.Conflict;
-                return response;
-            }
-
-            var listaVoznji = new List<Voznja>();
-            foreach (var item in BazaPodataka.Instanca.Voznje)
-            {
-                if (item.StatusVoznje == Models.Enum.StatusVoznje.Kreirana)
-                {
-                    listaVoznji.Add(item);
-                }
-            }
-            if (listaVoznji.Count == 0)
-            {
-                response.Content = new StringContent("Voznja je u medjuvremenu obradjena!");
-                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-                response.StatusCode = HttpStatusCode.Conflict;
-                return response;
-            }
-
-            var voznjaTemp = listaVoznji.Find(v => v.ID == id);
+            Int32.TryParse(Id, out int id);         
+      
+            var voznjaTemp = BazaPodataka.Instanca.Voznje.Find(v => v.ID == id);
 
             if (voznjaTemp == null)
             {
-                response.Content = new StringContent("Voznja je u medjuvremenu obradjena!");
+                response.Content = new StringContent("Greska na serveru!Ne postoji voznja!");
                 response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
                 response.StatusCode = HttpStatusCode.Conflict;
                 return response;
@@ -456,6 +456,36 @@ namespace TaxiSluzbaWebApi.Controllers
             if (voznjaTemp.StatusVoznje != Models.Enum.StatusVoznje.Kreirana)
             {
                 response.Content = new StringContent("Voznja je u medjuvremenu prhvacena ili otkazana!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Conflict;
+                return response;
+            }
+
+            var vozacTemp = BazaPodataka.Instanca.Vozaci.Find(v => v.KorisnickoIme.Equals(vozac));
+            if (vozacTemp == null)
+            {
+                response.Content = new StringContent("Los zahtev!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+            else if (vozacTemp.Automobil.TipAutomobila != voznjaTemp.TipAutomobila && voznjaTemp.TipAutomobila != Models.Enum.TipAutomobila.BezNaznake)
+            {
+                response.Content = new StringContent("Los zahtev!Vozac ne vozi zadati tip automobila!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Conflict;
+                return response;
+            }
+            else if (vozacTemp.Zauzet)
+            {
+                response.Content = new StringContent("Vozac je u medjuvremenu prihvatio drugu voznju!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Conflict;
+                return response;
+            }
+            else if (ulogovani.Find(v => v.KorisnickoIme.Equals(vozac)) == null)
+            {
+                response.Content = new StringContent("Vozac se u medjuvremenu odjavio!");
                 response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
                 response.StatusCode = HttpStatusCode.Conflict;
                 return response;
@@ -477,8 +507,99 @@ namespace TaxiSluzbaWebApi.Controllers
             response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
             return response;
         }
+        [HttpGet]
+        [Route("Voznje/{korisnickoIme}")]
+        public HttpResponseMessage Voznje(string korisnickoIme)
+        {
+            //var jsonObj = JToken.Parse(Request.RequestUri.ToString().Split('?').Last());
+            //var korisnickoIme = jsonObj.Value<string>("KorisnickoIme");
+            var informations = "";
+            var response = new HttpResponseMessage();
+            if (korisnickoIme == null)
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+            if (korisnickoIme == "")
+            {
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+
+
+            var ulogovani = (List<User>)HttpContext.Current.Application["ulogovani"];
+            if (ulogovani == null)
+            {
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+            else if (ulogovani.Find(u => u.KorisnickoIme.Equals(korisnickoIme)) == null)
+            {
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+            else if (ulogovani.Find(u => u.KorisnickoIme.Equals(korisnickoIme)).Uloga != Models.Enum.Uloga.Dispecer)
+            {
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+           
+            foreach (var item in BazaPodataka.Instanca.Voznje)
+            {
+                informations += "<table>";
+
+                if (item.Musterija != null || item.Musterija.KorisnickoIme != null)
+                {
+                    informations += String.Format(@"<tr><td>Musterija:</td><td>{0}</td></tr>", item.Musterija.KorisnickoIme);
+                }
+                if (item.Dispecer != null)
+                {
+                    if (item.Dispecer.KorisnickoIme != null)
+                    {
+                        informations += String.Format(@"<tr><td>Dispecer:</td><td>{0}</td></tr>", item.Dispecer.KorisnickoIme);
+                    }
+                }
+                if (item.Vozac != null)
+                {
+                    if (item.Vozac.KorisnickoIme != null)
+                    {
+                        informations += String.Format(@"<tr><td>Vozac:</td><td>{0}</td></tr>", item.Vozac.KorisnickoIme);
+                    }
+                }
+                informations += String.Format(@"<tr><td>Datum:</td><td>{0}</td></tr>", item.DatumVremePoruzbine.ToString());
+                informations += String.Format(@"<tr><td>Ulica:</td><td>{0}</td></tr>", item.Lokacija.Adresa.Ulica);
+                informations += String.Format(@"<tr><td>Broj:</td><td>{0}</td></tr>", item.Lokacija.Adresa.Broj);
+                informations += String.Format(@"<tr><td>Mesto:</td><td>{0}</td></tr>", item.Lokacija.Adresa.NasenjenoMesto);
+                informations += String.Format(@"<tr><td>Pozivni broj:</td><td>{0}</td></tr>", item.Lokacija.Adresa.PozivniBroj);
+                informations += String.Format(@"<tr><td>Status:</td><td>{0}</td></tr>", item.StatusVoznje.ToString());
+                if (item.StatusVoznje == Models.Enum.StatusVoznje.Uspesna)
+                {
+                    informations += String.Format(@"<tr><td>Ulica[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Ulica);
+                    informations += String.Format(@"<tr><td>Broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Broj);
+                    informations += String.Format(@"<tr><td>Mesto[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.NasenjenoMesto);
+                    informations += String.Format(@"<tr><td>Pozivni broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.PozivniBroj);
+                    informations += String.Format(@"<tr><td>Iznos:</td><td>{0}</td></tr>", item.Iznos);
+                }
+                if (item.Komentar.Korisnik != null)
+                {
+                    informations += String.Format(@"<tr><td>Komentar:</td><td>{0}</td></tr>", item.Komentar.Opis);
+                    informations += String.Format(@"<tr><td>Korisnik:</td><td>{0}</td></tr>", item.Komentar.Korisnik);
+                    informations += String.Format(@"<tr><td>Ocena:</td><td>{0}</td></tr>", item.Komentar.Ocena.ToString());
+                    informations += String.Format(@"<tr><td>Datum komentara:</td><td>{0}</td></tr>", item.Komentar.DatumObjave.ToString());
+                }
+                informations += "</table>";
+            }
+            if (informations.Equals(""))
+            {
+                informations += "Ne postoji ni jedna voznja u bazi!";
+            }
+            response.Content = new StringContent(informations);
+            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+            response.StatusCode = HttpStatusCode.OK;
+            //HttpContext.Current.Session["ulogovan"] = new Vozac();
+            //HttpContext.Current.Session["ulogovan"] = v;
+            //HttpContext.Current.Application["ulogovan"] = new Vozac();                      
+            return response;
+        }
     }
 }
-
-
-
