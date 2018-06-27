@@ -81,6 +81,7 @@ namespace TaxiSluzbaWebApi.Controllers
                     }
                     else if(v.Sifra.Equals(sifra))
                     {
+                        page += @"<button id=""home"">Pocetna strana</button>";
                         page += @"<button id=""view"">Pregledaj profil</button>";
                         page += @"<button id=""edit"">Izmeni profil</button>";
                         page += @"<button id=""change"">Promeni sifru</button>";
@@ -111,6 +112,7 @@ namespace TaxiSluzbaWebApi.Controllers
                 }
                 else if (d.Sifra.Equals(sifra))
                 {
+                    page += @"<button id=""home"">Pocetna strana</button>";
                     page += @"<button id=""view"">Pregledaj profil</button>";
                     page += @"<button id=""edit"">Izmeni profil</button>";
                     page += @"<button id=""change"">Promeni sifru</button>";
@@ -142,6 +144,7 @@ namespace TaxiSluzbaWebApi.Controllers
             }
             else if(m.Sifra.Equals(sifra))
             {
+                page += @"<button id=""home"">Pocetna strana</button>";
                 page += @"<button id=""view"">Pregledaj profil</button>";
                 page += @"<button id=""edit"">Izmeni profil</button>";
                 page += @"<button id=""change"">Promeni sifru</button>";
@@ -170,253 +173,7 @@ namespace TaxiSluzbaWebApi.Controllers
             }
           
         }
-        [HttpGet]
-        [Route("Voznje")]
-        public HttpResponseMessage Voznje()
-        {
-            var jsonObj = JToken.Parse(Request.RequestUri.ToString().Split('?').Last());
-
-            var korisnickoIme = jsonObj.Value<string>("KorisnickoIme");                   
-            var response = new HttpResponseMessage();
-
-            var informations = "";
-
-            if (korisnickoIme == null )
-            {
-                response.Content = new StringContent("");
-                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-                response.StatusCode = HttpStatusCode.BadRequest;
-                return response;
-            }
-
-            var ulogovani = (List<User>)HttpContext.Current.Application["ulogovani"];
-            if (ulogovani == null)
-            {
-                response.Content = new StringContent("");
-                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-                response.StatusCode = HttpStatusCode.BadRequest;
-                return response;
-            }
-
-            if (ulogovani.Find(u => u.KorisnickoIme.Equals(korisnickoIme)) == null)
-            {
-                response.Content = new StringContent("");
-                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-                response.StatusCode = HttpStatusCode.Forbidden;
-                return response;
-            }
-            //var ulogovan = (User)HttpContext.Current.Session["ulogovan"];
-            //if (ulogovan != null)
-            //{
-            //    response.Content = new StringContent("");
-            //    response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-            //    response.StatusCode = HttpStatusCode.Forbidden;
-            //    return response;
-            //}
-            
-
-
-            var m = BazaPodataka.Instanca.NadjiMusteriju(korisnickoIme);
-            if (m == null)
-            {
-                var d = BazaPodataka.Instanca.NadjiDispecera(korisnickoIme);
-                if (d == null)
-                {
-                    var v = BazaPodataka.Instanca.NadjiVozaca(korisnickoIme);
-                    if (v == null)
-                    {
-                        response.Content = new StringContent("");
-                        response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-                        response.StatusCode = HttpStatusCode.Conflict;
-                        return response;
-                    }
-                    else 
-                    {
-                        foreach (var item in BazaPodataka.Instanca.Voznje)
-                        {
-                            informations += "<table>";
-                            if ((item.Vozac != null && item.Vozac.KorisnickoIme != null))
-                            {
-                                if (item.Vozac.KorisnickoIme.Equals(korisnickoIme))
-                                {
-                                    if (item.Musterija != null || item.Musterija.KorisnickoIme != null)
-                                    {
-                                        informations += String.Format(@"<tr><td>Musterija:</td><td>{0}</td></tr>", item.Musterija.KorisnickoIme);
-                                    }
-                                    if (item.Dispecer != null)
-                                    {
-                                        if (item.Dispecer.KorisnickoIme != null)
-                                        {
-                                            informations += String.Format(@"<tr><td>Dispecer:</td><td>{0}</td></tr>", item.Dispecer.KorisnickoIme);
-                                        }
-                                    }
-                                    informations += String.Format(@"<tr><td>Ulica:</td><td>{0}</td></tr>", item.Lokacija.Adresa.Ulica);
-                                    informations += String.Format(@"<tr><td>Broj:</td><td>{0}</td></tr>", item.Lokacija.Adresa.Broj);
-                                    informations += String.Format(@"<tr><td>Mesto:</td><td>{0}</td></tr>", item.Lokacija.Adresa.NasenjenoMesto);
-                                    informations += String.Format(@"<tr><td>Pozivni broj:</td><td>{0}</td></tr>", item.Lokacija.Adresa.PozivniBroj);
-                                    informations += String.Format(@"<tr><td>Status:</td><td>{0}</td></tr>", item.StatusVoznje.ToString());
-                                    if (item.StatusVoznje == Models.Enum.StatusVoznje.Uspesna)
-                                    {
-                                        informations += String.Format(@"<tr><td>Ulica[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Ulica);
-                                        informations += String.Format(@"<tr><td>Broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Broj);
-                                        informations += String.Format(@"<tr><td>Mesto[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.NasenjenoMesto);
-                                        informations += String.Format(@"<tr><td>Pozivni broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.PozivniBroj);
-                                        informations += String.Format(@"<tr><td>Iznos:</td><td>{0}</td></tr>", item.Iznos);
-                                    }
-                                    if (item.Komentar.Korisnik != null)
-                                    {
-                                        informations += String.Format(@"<tr><td>Komentar:</td><td>{0}</td></tr>", item.Komentar.Opis);
-                                        informations += String.Format(@"<tr><td>Korisnik:</td><td>{0}</td></tr>", item.Komentar.Korisnik);
-                                        informations += String.Format(@"<tr><td>Ocena:</td><td>{0}</td></tr>", item.Komentar.Ocena.ToString());
-                                        informations += String.Format(@"<tr><td>Datum komentara:</td><td>{0}</td></tr>", item.Komentar.DatumObjave.ToString());
-                                    }                                  
-                                    informations += "</table>";
-
-                                }
-
-                            }
-                        }
-                        response.Content = new StringContent(informations);
-                        response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-                        response.StatusCode = HttpStatusCode.OK;
-                        //HttpContext.Current.Session["ulogovan"] = new Vozac();
-                        //HttpContext.Current.Session["ulogovan"] = v;
-                        //HttpContext.Current.Application["ulogovan"] = new Vozac();                      
-                        return response;
-                    }
-                    
-                }
-                else 
-                {
-                    foreach (var item in BazaPodataka.Instanca.Voznje)
-                    {
-                        informations += "<table>";
-                        if ((item.Dispecer != null && item.Dispecer.KorisnickoIme != null))
-                        {
-                            if (item.Dispecer.KorisnickoIme.Equals(korisnickoIme))
-                            {
-                                if (item.Musterija != null)
-                                {
-                                    if (item.Musterija.KorisnickoIme != null)
-                                    {
-                                        informations += String.Format(@"<tr><td>Musterija:</td><td>{0}</td></tr>", item.Musterija.KorisnickoIme);
-                                    }
-                                }
-                                informations += String.Format(@"<tr><td>Vozac:</td><td>{0}</td></tr>", item.Vozac.KorisnickoIme);
-                                informations += String.Format(@"<tr><td>Ulica:</td><td>{0}</td></tr>", item.Lokacija.Adresa.Ulica);
-                                informations += String.Format(@"<tr><td>Broj:</td><td>{0}</td></tr>", item.Lokacija.Adresa.Broj);
-                                informations += String.Format(@"<tr><td>Mesto:</td><td>{0}</td></tr>", item.Lokacija.Adresa.NasenjenoMesto);
-                                informations += String.Format(@"<tr><td>Pozivni broj:</td><td>{0}</td></tr>", item.Lokacija.Adresa.PozivniBroj);
-                                informations += String.Format(@"<tr><td>Status:</td><td>{0}</td></tr>", item.StatusVoznje.ToString());
-                                if(item.StatusVoznje == Models.Enum.StatusVoznje.Uspesna)
-                                {
-                                    informations += String.Format(@"<tr><td>Ulica[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Ulica);
-                                    informations += String.Format(@"<tr><td>Broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Broj);
-                                    informations += String.Format(@"<tr><td>Mesto[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.NasenjenoMesto);
-                                    informations += String.Format(@"<tr><td>Pozivni broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.PozivniBroj);
-                                    informations += String.Format(@"<tr><td>Iznos:</td><td>{0}</td></tr>", item.Iznos);
-                                }
-                                if (item.Komentar.Korisnik != null)
-                                {
-                                    informations += String.Format(@"<tr><td>Komentar:</td><td>{0}</td></tr>", item.Komentar.Opis);
-                                    informations += String.Format(@"<tr><td>Korisnik:</td><td>{0}</td></tr>", item.Komentar.Korisnik);
-                                    informations += String.Format(@"<tr><td>Ocena:</td><td>{0}</td></tr>", item.Komentar.Ocena.ToString());
-                                    informations += String.Format(@"<tr><td>Datum komentara:</td><td>{0}</td></tr>", item.Komentar.DatumObjave.ToString());
-                                }
-                                informations += "</table>";
-                            }
-                        }
-                    }
-                    response.Content = new StringContent(informations);
-                    response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-                    response.StatusCode = HttpStatusCode.OK;
-                    //HttpContext.Current.Session["ulogovan"] = new Vozac();
-                    //HttpContext.Current.Session["ulogovan"] = v;
-                    //HttpContext.Current.Application["ulogovan"] = new Vozac();
-                    return response;
-                }
-               
-            }
-            else 
-            {
-                foreach (var item in BazaPodataka.Instanca.Voznje)
-                {
-                    informations += "<table>";
-                    if ((item.Musterija != null && item.Musterija.KorisnickoIme != null))
-                    {
-                        if (item.Musterija.KorisnickoIme.Equals(korisnickoIme))
-                        {
-                                                    
-                            if (item.StatusVoznje == Models.Enum.StatusVoznje.Kreirana)
-                            {                                
-                                informations += String.Format(@"<tr><td>Ulica:</td><td><input type=""text"" value=""{0}"" id=""ulicaM""/></td></tr>", item.Lokacija.Adresa.Ulica);
-                                informations += String.Format(@"<tr><td>Broj:</td><td><input type=""text"" value=""{0}"" id=""brojKuceM""/></td></tr>", item.Lokacija.Adresa.Broj);
-                                informations += String.Format(@"<tr><td>Mesto:</td><td><input type=""text"" value=""{0}"" id=""mestoM""/></td></tr>", item.Lokacija.Adresa.NasenjenoMesto);
-                                informations += String.Format(@"<tr><td>Pozivni broj:</td><td><input type=""text"" value=""{0}"" id=""pozivniBrojM""/></td></tr>", item.Lokacija.Adresa.PozivniBroj);
-                                informations += String.Format(@"<tr><td>Status:</td><td>{0}</td></tr>", item.StatusVoznje.ToString());
-                                informations += String.Format(@"<tr><td><button id=""izmeniVoznju"" value=""{0}"">Izmeni</button></td><td><button id=""otkaziVoznju"" value=""{1}"">Otkazi</button></td></tr>", item.ID, item.ID);
-                                informations += "</table>";
-                                informations += String.Format(@"<div id=""regVal""></div>");
-                            }
-                            else
-                            {
-                                if (item.Dispecer != null)
-                                {
-                                    if (item.Dispecer.KorisnickoIme != null)
-                                    {
-                                        informations += String.Format(@"<tr><td>Dispecer:</td><td>{0}</td></tr>", item.Dispecer.KorisnickoIme);
-                                    }
-                                }
-                                informations += String.Format(@"<tr><td>Vozac:</td><td>{0}</td></tr>", item.Vozac.KorisnickoIme);
-                                informations += String.Format(@"<tr><td>Ulica:</td><td>{0}</td></tr>", item.Lokacija.Adresa.Ulica);
-                                informations += String.Format(@"<tr><td>Broj:</td><td>{0}</td></tr>", item.Lokacija.Adresa.Broj);
-                                informations += String.Format(@"<tr><td>Mesto:</td><td>{0}</td></tr>", item.Lokacija.Adresa.NasenjenoMesto);
-                                informations += String.Format(@"<tr><td>Pozivni broj:</td><td>{0}</td></tr>", item.Lokacija.Adresa.PozivniBroj);
-                                informations += String.Format(@"<tr><td>Status:</td><td>{0}</td></tr>", item.StatusVoznje.ToString());
-                                if (item.StatusVoznje == Models.Enum.StatusVoznje.Uspesna)
-                                {
-                                    informations += String.Format(@"<tr><td>Ulica[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Ulica);
-                                    informations += String.Format(@"<tr><td>Broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.Broj);
-                                    informations += String.Format(@"<tr><td>Mesto[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.NasenjenoMesto);
-                                    informations += String.Format(@"<tr><td>Pozivni broj[ODREDISTE]:</td><td>{0}</td></tr>", item.Odrediste.Adresa.PozivniBroj);
-                                    informations += String.Format(@"<tr><td>Iznos:</td><td>{0}</td></tr>", item.Iznos);
-                                }
-                                if (item.Komentar.Korisnik != null)
-                                {
-                                    informations += String.Format(@"<tr><td>Komentar:</td><td>{0}</td></tr>", item.Komentar.Opis);
-                                    informations += String.Format(@"<tr><td>Korisnik:</td><td>{0}</td></tr>", item.Komentar.Korisnik);
-                                    informations += String.Format(@"<tr><td>Ocena:</td><td>{0}</td></tr>", item.Komentar.Ocena.ToString());
-                                    informations += String.Format(@"<tr><td>Datum komentara:</td><td>{0}</td></tr>", item.Komentar.DatumObjave.ToString());
-                                }
-                                else
-                                {
-                                    informations += String.Format(@"<tr><td>Komentar:</td><td><textarea placeholder=""Komentar voznje...""></textarea></td></tr>");                                  
-                                    informations += String.Format(@"<tr><td>Ocena:</td><td>");
-                                    informations += @"<select id=""ocena"">";
-                                    informations += @"<option value=""1"">1</option>";
-                                    informations += @"<option value=""2"">2</option>";
-                                    informations += @"<option value=""3"">3</option>";
-                                    informations += @"<option value=""4"">4</option>";
-                                    informations += @"<option value=""5"">5</option></select></td></tr>";
-                                    informations += String.Format(@"<tr><td></td><td><button id=""komentarisiVoznju"" value=""{0}"">Ostavi komentar</button></td></tr>", item.ID);
-                                }                                
-                                informations += "</table>";
-                            }
-                        }
-                    }
-                }
-                response.Content = new StringContent(informations);
-                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-                response.StatusCode = HttpStatusCode.OK;
-                //HttpContext.Current.Session["ulogovan"] = new Vozac();
-                //HttpContext.Current.Session["ulogovan"] = v;
-                //HttpContext.Current.Application["ulogovan"] = new Vozac();
-
-                return response;
-            }
-            
-
-        }
+       
         [HttpDelete]
         [Route("LogOut")]
         public HttpResponseMessage LogOut([FromBody]JToken jToken)

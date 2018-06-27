@@ -41,8 +41,10 @@ namespace TaxiSluzbaWebApi.Controllers
                 noviVozac.Pol = Models.Enum.Pol.Zenski;
             }
 
-            Automobil auto = new Automobil();
-            auto.Vozac = new Vozac();
+            Automobil auto = new Automobil
+            {
+                Vozac = new Vozac()
+            };
             auto.Vozac = noviVozac;
             auto.Godiste = jToken.Value<string>("GodisteAutomobila");
             auto.BrojTaksiVozila = jToken.Value<string>("Id");
@@ -543,7 +545,16 @@ namespace TaxiSluzbaWebApi.Controllers
                 response.StatusCode = HttpStatusCode.Forbidden;
                 return response;
             }
-           
+            informations += @"<div class=""filt""><select id=""tipFiltera"">";
+            informations += @"<option value=""Kreirana"">Kreirana</option>";
+            informations += @"<option value=""Formirana"">Formirana</option>";
+            informations += @"<option value=""Obradjena"">Obradjena</option>";
+            informations += @"<option value=""Prihvacena"">Prihvacena</option>";
+            informations += @"<option value=""Otkazana"">Otkazana</option>";
+            informations += @"<option value=""Neuspesna"">Neuspesna</option>";
+            informations += @"<option value=""Uspesna"">Uspesna</option>";
+            informations += @"</select><button id=""filtriraj"">Filter</button>";
+            informations += @"<button id=""sortirajDatum"">Sortiraj po datumu</button></div>";
             foreach (var item in BazaPodataka.Instanca.Voznje)
             {
                 informations += "<table>";

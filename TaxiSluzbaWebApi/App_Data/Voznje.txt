@@ -1,9 +1,10 @@
-26-Jun-18 20:21:25;Bulevar Oslobodjenja;147;Novi Sad;21000;BezNaznake;Nile;;;;;;SimkeSofer;0;Neuspesna;01-Jan-01 00:00:00;SimkeSofer;Testiranje komentara bez entera!;3;
-26-Jun-18 20:32:29;Bulevar Oslobodjenja;147;Novi Sad;21000;BezNaznake;Nile;Micurinova;36;Novi Sad;21000;nina;SimkeSofer;300;Uspesna;26-Jun-18 22:02:01;Nile;TEST;5;
 26-Jun-18 20:34:44;Micurinova;36;Novi Sad;21000;BezNaznake;Nile;;;;;;SimkeSofer;0;Neuspesna;26-Jun-18 20:36:15;SimkeSofer;Test ;2;
-26-Jun-18 20:35:08;dadsa;1;dasd;1234;BezNaznake;Nile;;;;;nina;SimkeSofer;0;Neuspesna;26-Jun-18 22:03:18;Nile;Guzac moj najpametniji!;5;
-26-Jun-18 20:36:49;dsad;231;dadas;1234;BezNaznake;Nile;;;;;;SimkeSofer;0;Neuspesna;26-Jun-18 20:45:54;SimkeSofer;fsdfs;1;
+26-Jun-18 20:32:29;Bulevar Oslobodjenja;147;Novi Sad;21000;BezNaznake;Nile;Micurinova;36;Novi Sad;21000;nina;SimkeSofer;300;Uspesna;26-Jun-18 22:02:01;Nile;TEST;5;
 26-Jun-18 20:44:53;tes;213;fs;31234;BezNaznake;Nile;;;;;;SimkeSofer;0;Neuspesna;26-Jun-18 20:46:37;SimkeSofer;xdv;1;
+26-Jun-18 20:36:49;dsad;231;dadas;1234;BezNaznake;Nile;;;;;;SimkeSofer;0;Neuspesna;26-Jun-18 20:45:54;SimkeSofer;fsdfs;1;
+27-Jun-18 00:40:45;adsa;123;dasd;2345;BezNaznake;Nile;;;;;;SimkeSofer;0;Neuspesna;27-Jun-18 00:42:10;SimkeSofer;;1;
+26-Jun-18 20:21:25;Bulevar Oslobodjenja;147;Novi Sad;21000;BezNaznake;Nile;;;;;;SimkeSofer;0;Neuspesna;01-Jan-01 00:00:00;SimkeSofer;Testiranje komentara bez entera!;3;
 26-Jun-18 21:45:18;das;213;dasd;2314;BezNaznake;Nile;;;;;;SimkeSofer;0;Neuspesna;26-Jun-18 21:45:34;SimkeSofer;NOVI KOMENTAR;1;
 26-Jun-18 22:31:10;testOtkaz;1;NS;21000;BezNaznake;Nile;;;;;;;0;Otkazana;26-Jun-18 22:37:42;Nile;;2;
 26-Jun-18 22:37:57;fesdfsdc;2;fsafsdfsdafds;1234;BezNaznake;Nile;;;;;;;0;Otkazana;26-Jun-18 22:42:42;Nile;123;1;
+26-Jun-18 20:35:08;dadsa;1;dasd;1234;BezNaznake;Nile;;;;;nina;SimkeSofer;0;Neuspesna;26-Jun-18 22:03:18;Nile;Guzac moj najpametniji!;5;

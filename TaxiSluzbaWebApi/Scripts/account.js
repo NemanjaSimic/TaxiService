@@ -20,6 +20,10 @@
     });
 });
 
+$(document).off('click', '#home').on('click','#home',function () {
+    window.location.href = "Index.html";
+});
+
 $(document).on('click', '#edit', function () {
     var korisnikJSON = sessionStorage.getItem('korisnik');
     var korisnik = $.parseJSON(korisnikJSON);

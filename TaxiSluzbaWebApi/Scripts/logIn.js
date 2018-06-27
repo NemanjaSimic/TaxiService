@@ -46,9 +46,9 @@ function LogIn(user,refresh) {
                 sessionStorage.setItem('korisnik', JSON.stringify(korisnik));
                 $('#korImeVal').html("");
                 //$.ajax({
-                //    url: "Scripts/account.js",
-                //    dataType: "script"
-                //});        
+                //   url: "Scripts/account.js",
+                //   dataType: "script"
+                //});
             } else if (data.status === 401) {
                 DobarUsername();
                 PogresnaSifra();
@@ -67,7 +67,7 @@ function LogIn(user,refresh) {
 function GetRides(korisnik) {
     $.ajax({
         type: 'GET',
-        url: 'api/Korisnik/Voznje',
+        url: 'api/Voznja/Voznje',
         data: JSON.stringify(korisnik),
         contentType: 'application/json; charset=utf-8',
         dataType: 'html',
@@ -76,6 +76,7 @@ function GetRides(korisnik) {
         }
     });
 }
+
 
 $(document).ready(function () {
     $('#korImeVal').html("");
@@ -91,7 +92,7 @@ $(document).ready(function () {
             LogIn(korisnik,false);                  
     });
 
-
+   
 });
 
 //$(document).on('click', '#ucitaj', function () {
