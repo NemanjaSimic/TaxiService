@@ -76,7 +76,8 @@ namespace TaxiSluzbaWebApi.Models
                         Pol = (parametri[4].Equals("Muski")) ? Enum.Pol.Muski : Enum.Pol.Zenski,
                         JMBG = parametri[5],
                         KontaktTelefon = parametri[6],
-                        Email = parametri[7]
+                        Email = parametri[7],
+                        Blokiran = (parametri[8].Equals("False")) ? false : true
                     };
                     Musterije.Add(musterija);
                 }
@@ -102,6 +103,7 @@ namespace TaxiSluzbaWebApi.Models
                         JMBG = parametri[5],
                         KontaktTelefon = parametri[6],
                         Email = parametri[7],
+                        Blokiran = (parametri[12].Equals("False")) ? false : true,
                         Automobil = new Automobil()
                     };
                    
@@ -215,31 +217,33 @@ namespace TaxiSluzbaWebApi.Models
 
         public void UpisiUBazuMusterije()
         {
-                using (TextWriter tw = new StreamWriter(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiService\TaxiSluzbaWebApi\App_Data\Musterije.txt"))
+            using (TextWriter tw = new StreamWriter(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiService\TaxiSluzbaWebApi\App_Data\Musterije.txt"))
+            {
+                foreach (var item in Musterije)
                 {
-                    foreach (var item in Musterije)
+                    tw.Write(item.KorisnickoIme);
+                    tw.Write(";");
+                    tw.Write(item.Sifra);
+                    tw.Write(";");
+                    tw.Write(item.Ime);
+                    tw.Write(";");
+                    tw.Write(item.Prezime);
+                    tw.Write(";");
+                    tw.Write(item.Pol);
+                    tw.Write(";");
+                    tw.Write(item.JMBG);
+                    tw.Write(";");
+                    tw.Write(item.KontaktTelefon);
+                    tw.Write(";");
+                    tw.Write(item.Email);
+                    tw.Write(";");
+                    tw.Write(item.Blokiran.ToString());
+                    if (Musterije.IndexOf(item) != Musterije.Count() - 1)
                     {
-                        tw.Write(item.KorisnickoIme);
-                        tw.Write(";");
-                        tw.Write(item.Sifra);
-                        tw.Write(";");
-                        tw.Write(item.Ime);
-                        tw.Write(";");
-                        tw.Write(item.Prezime);
-                        tw.Write(";");
-                        tw.Write(item.Pol);
-                        tw.Write(";");
-                        tw.Write(item.JMBG);
-                        tw.Write(";");
-                        tw.Write(item.KontaktTelefon);
-                        tw.Write(";");
-                        tw.Write(item.Email);
-                        if(Musterije.IndexOf(item) != Musterije.Count() - 1)
-                        {
-                            tw.Write("\n");
-                        }
+                        tw.Write("\n");
                     }
                 }
+            }
         }
 
         public void UpisiUBazuDispecere()
@@ -273,39 +277,41 @@ namespace TaxiSluzbaWebApi.Models
 
         public void UpisiUBazuVozace()
         {
-                using (TextWriter tw = new StreamWriter(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiService\TaxiSluzbaWebApi\App_Data\Vozaci.txt"))
+            using (TextWriter tw = new StreamWriter(@"C:\Users\Nemanja\Desktop\FAKS\3.GODINA\WEB\TaxiSluzbaWebApp\TaxiService\TaxiSluzbaWebApi\App_Data\Vozaci.txt"))
+            {
+                foreach (var item in Vozaci)
                 {
-                    foreach (var item in Vozaci)
+                    tw.Write(item.KorisnickoIme);
+                    tw.Write(";");
+                    tw.Write(item.Sifra);
+                    tw.Write(";");
+                    tw.Write(item.Ime);
+                    tw.Write(";");
+                    tw.Write(item.Prezime);
+                    tw.Write(";");
+                    tw.Write(item.Pol);
+                    tw.Write(";");
+                    tw.Write(item.JMBG);
+                    tw.Write(";");
+                    tw.Write(item.KontaktTelefon);
+                    tw.Write(";");
+                    tw.Write(item.Email);
+                    tw.Write(";");
+                    tw.Write(item.Automobil.BrojRegistarskeOznake);
+                    tw.Write(";");
+                    tw.Write(item.Automobil.Godiste);
+                    tw.Write(";");
+                    tw.Write(item.Automobil.BrojTaksiVozila);
+                    tw.Write(";");
+                    tw.Write(item.Automobil.TipAutomobila.ToString());
+                    tw.Write(";");
+                    tw.Write(item.Blokiran.ToString());
+                    if (Vozaci.IndexOf(item) != Vozaci.Count() - 1)
                     {
-                        tw.Write(item.KorisnickoIme);
-                        tw.Write(";");
-                        tw.Write(item.Sifra);
-                        tw.Write(";");
-                        tw.Write(item.Ime);
-                        tw.Write(";");
-                        tw.Write(item.Prezime);
-                        tw.Write(";");
-                        tw.Write(item.Pol);
-                        tw.Write(";");
-                        tw.Write(item.JMBG);
-                        tw.Write(";");
-                        tw.Write(item.KontaktTelefon);
-                        tw.Write(";");
-                        tw.Write(item.Email);
-                        tw.Write(";");
-                        tw.Write(item.Automobil.BrojRegistarskeOznake);
-                        tw.Write(";");
-                        tw.Write(item.Automobil.Godiste);
-                        tw.Write(";");
-                        tw.Write(item.Automobil.BrojTaksiVozila);
-                        tw.Write(";");
-                        tw.Write(item.Automobil.TipAutomobila.ToString());
-                        if (Vozaci.IndexOf(item) != Vozaci.Count() - 1)
-                        {
-                            tw.Write("\n");
-                        }
+                        tw.Write("\n");
                     }
                 }
+            }
         }
 
         public void UpisiUBazuVoznje()

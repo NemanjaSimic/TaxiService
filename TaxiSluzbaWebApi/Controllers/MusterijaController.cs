@@ -23,6 +23,8 @@ namespace TaxiSluzbaWebApi.Controllers
             var broj = jToken.Value<string>("Broj");
             var mesto = jToken.Value<string>("Mesto");
             var pozivniBroj = jToken.Value<string>("PozivniBroj");
+            var xKordinata = jToken.Value<double>("XKordinata");
+            var yKordinata = jToken.Value<double>("YKordinata");
             Int32.TryParse(jToken.Value<string>("TipVozila"), out int tip);
             var tipVozila = Models.Enum.TipAutomobila.BezNaznake;
 
@@ -34,10 +36,7 @@ namespace TaxiSluzbaWebApi.Controllers
             {
                 tipVozila = Models.Enum.TipAutomobila.Kombi;
             }
-            else
-            {
-                tipVozila = Models.Enum.TipAutomobila.BezNaznake;
-            }
+
 
             if (BazaPodataka.Instanca.NadjiMusteriju(korisnickoIme) == null)
             {
@@ -71,6 +70,13 @@ namespace TaxiSluzbaWebApi.Controllers
                 return response;
             }
 
+            if (BazaPodataka.Instanca.NadjiMusteriju(korisnickoIme).Blokiran)
+            {
+                response.Content = new StringContent("Korisnik blokiran!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
             var input = pozivniBroj;
             var pattern = new Regex(@"\d{4,8}");
             var match = pattern.Match(input);
@@ -104,13 +110,15 @@ namespace TaxiSluzbaWebApi.Controllers
             novaVoznja.Lokacija.Adresa.Broj = broj;
             novaVoznja.Lokacija.Adresa.NasenjenoMesto = mesto;
             novaVoznja.Lokacija.Adresa.PozivniBroj = pozivniBroj;
+            novaVoznja.Lokacija.Y = yKordinata;
+            novaVoznja.Lokacija.X = xKordinata;
             novaVoznja.TipAutomobila = tipVozila;
             novaVoznja.StatusVoznje = Models.Enum.StatusVoznje.Kreirana;
             novaVoznja.Musterija = BazaPodataka.Instanca.NadjiMusteriju(korisnickoIme);
             novaVoznja.DatumVremePoruzbine = DateTime.Now;         
             novaVoznja.ID = BazaPodataka.Instanca.Voznje.Count + 1;
             BazaPodataka.Instanca.Voznje.Add(novaVoznja);
-
+            BazaPodataka.Instanca.UpisiUBazuVoznje();
             return Request.CreateResponse(HttpStatusCode.OK);
         }
         [HttpDelete]
@@ -147,6 +155,14 @@ namespace TaxiSluzbaWebApi.Controllers
             else if (ulogovani.Find(u => u.KorisnickoIme.Equals(korisnickoIme)).Uloga != Models.Enum.Uloga.Musterija)
             {
                 response.StatusCode = HttpStatusCode.Unauthorized;
+                return response;
+            }
+
+            if (BazaPodataka.Instanca.NadjiMusteriju(korisnickoIme).Blokiran)
+            {
+                response.Content = new StringContent("Korisnik blokiran!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
                 return response;
             }
 
@@ -248,6 +264,15 @@ namespace TaxiSluzbaWebApi.Controllers
                 response.StatusCode = HttpStatusCode.Forbidden;
                 return response;
             }
+
+            if (BazaPodataka.Instanca.NadjiMusteriju(KorisnickoIme).Blokiran)
+            {
+                response.Content = new StringContent("Korisnik blokiran!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+
             var voznja = new Voznja();
             foreach (var item in BazaPodataka.Instanca.Voznje)
             {
@@ -296,7 +321,8 @@ namespace TaxiSluzbaWebApi.Controllers
             Int32.TryParse(jToken.Value<string>("Ocena"), out int ocena);
             Int32.TryParse(jToken.Value<string>("ID"), out int id);
             var response = new HttpResponseMessage();
-
+            komentar = komentar.Replace(';', '.');
+            komentar = komentar.Replace('\n', ' ');
             if (korisnickoIme == null || komentar == null)
             {
                 response.Content = new StringContent("Los zahtev!");

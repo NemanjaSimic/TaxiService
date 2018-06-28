@@ -78,6 +78,12 @@ namespace TaxiSluzbaWebApi.Controllers
                         response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
                         response.StatusCode = HttpStatusCode.Conflict;
                         return response;
+                    }else if (v.Blokiran)
+                    {
+                        response.Content = new StringContent("");
+                        response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                        response.StatusCode = HttpStatusCode.MethodNotAllowed;
+                        return response;
                     }
                     else if(v.Sifra.Equals(sifra))
                     {
@@ -120,6 +126,7 @@ namespace TaxiSluzbaWebApi.Controllers
                     page += @"<button id=""formirajVoznju"">Formiraj voznju</button>";
                     page += @"<button id=""obradiVoznju"" > Obradi voznju</button>";
                     page += @"<button id=""pregledajVoznje"" > Ucitaj sve voznje</button>";
+                    page += @"<button id=""blok"" >Blokiraj korisnike</button>";
                     page += @"<button id=""logout"">Izloguj se</button>";
                     response.Content = new StringContent(page);
                     response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
@@ -142,6 +149,13 @@ namespace TaxiSluzbaWebApi.Controllers
                     return response;
                 }
             }
+            else if (m.Blokiran)
+            {
+                response.Content = new StringContent("");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.MethodNotAllowed;
+                return response;
+            }
             else if(m.Sifra.Equals(sifra))
             {
                 page += @"<button id=""home"">Pocetna strana</button>";
@@ -149,8 +163,6 @@ namespace TaxiSluzbaWebApi.Controllers
                 page += @"<button id=""edit"">Izmeni profil</button>";
                 page += @"<button id=""change"">Promeni sifru</button>";
                 page += @"<button id=""request"">Zahtev za voznju</button>";
-                page += @"<button id=""sort"">Sortiraj voznje</button>";
-                page += @"<button id=""filter"">Filtriraj voznje</button>";
                 page += @"<button id=""logout"">Izloguj se</button>";
                 response.Content = new StringContent(page);
                 response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
@@ -339,6 +351,10 @@ namespace TaxiSluzbaWebApi.Controllers
                     }
                     else
                     {
+                        if (tempV.Blokiran)
+                        {
+                            return Request.CreateResponse(HttpStatusCode.Forbidden, "Blokiran korisnik");
+                        }
                         BazaPodataka.Instanca.Vozaci.Remove(tempV);
                         tempV.KorisnickoIme = musterija.KorisnickoIme;
                         tempV.Ime = musterija.Ime;
@@ -367,7 +383,11 @@ namespace TaxiSluzbaWebApi.Controllers
             }
             else
             {
-                    BazaPodataka.Instanca.Musterije.Remove(tempM);
+                if (tempM.Blokiran)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Forbidden, "Blokiran korisnik");
+                }
+                BazaPodataka.Instanca.Musterije.Remove(tempM);
                     musterija.Sifra = tempM.Sifra;
                     BazaPodataka.Instanca.Musterije.Add(musterija);
                     BazaPodataka.Instanca.UpisiUBazuMusterije();
@@ -413,6 +433,10 @@ namespace TaxiSluzbaWebApi.Controllers
                     }
                     else
                     {
+                        if (tempV.Blokiran)
+                        {
+                            return Request.CreateResponse(HttpStatusCode.Forbidden, "Blokiran korisnik");
+                        }
                         BazaPodataka.Instanca.Vozaci.Remove(tempV);
                         tempV.Sifra = m.Sifra;
                         BazaPodataka.Instanca.Vozaci.Add(tempV);
@@ -431,6 +455,10 @@ namespace TaxiSluzbaWebApi.Controllers
             }
             else
             {
+                if (tempM.Blokiran)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Forbidden, "Blokiran korisnik");
+                }
                 BazaPodataka.Instanca.Musterije.Remove(tempM);
                 tempM.Sifra = m.Sifra;
                 BazaPodataka.Instanca.Musterije.Add(tempM);
@@ -466,6 +494,10 @@ namespace TaxiSluzbaWebApi.Controllers
                     }
                     else
                     {
+                        if (v.Blokiran)
+                        {
+                            return Request.CreateResponse(HttpStatusCode.Forbidden, "Blokiran korisnik");
+                        }
                         page += $"<table><tr><td>Ime:</td><td>{v.Ime}</td></tr>";
                         page += $"<tr><td>Prezime:</td><td>{v.Prezime}</td></tr>";
                         page += $"<tr><td>JMBG:</td><td>{v.JMBG}</td></tr>";
@@ -495,6 +527,10 @@ namespace TaxiSluzbaWebApi.Controllers
             }           
             else
             {
+                if (m.Blokiran)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Forbidden, "Blokiran korisnik");
+                }
                 page += $"<table><tr><td>Ime:</td><td>{m.Ime}</td></tr>";
                 page += $"<tr><td>Prezime:</td><td>{m.Prezime}</td></tr>";
                 page += $"<tr><td>JMBG:</td><td>{m.JMBG}</td></tr>";
@@ -535,6 +571,10 @@ namespace TaxiSluzbaWebApi.Controllers
                     }
                     else
                     {
+                        if (v.Blokiran)
+                        {
+                            return Request.CreateResponse(HttpStatusCode.Forbidden, "Blokiran korisnik");
+                        }
                         page += @"<table><tr><td>Ime:</td><td><input type=""text"" value=""" + v.Ime + @""" id=""imeEdit""/></td></tr>";
                         page += @"<tr><td>Prezime:</td><td><input type=""text"" value=""" + v.Prezime + @""" id=""prezimeEdit""/></td></tr>";
                         page += @"<tr><td>JMBG:</td><td><input type=""text"" value=""" + v.JMBG + @""" id=""jmbgEdit""/></td></tr>";
@@ -568,6 +608,10 @@ namespace TaxiSluzbaWebApi.Controllers
             }
             else
             {
+                if (m.Blokiran)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Forbidden, "Blokiran korisnik");
+                }
                 page += @"<table><tr><td>Ime:</td><td><input type=""text"" value=""" + m.Ime + @""" id=""imeEdit""/></td></tr>";
                 page += @"<tr><td>Prezime:</td><td><input type=""text"" value=""" + m.Prezime + @""" id=""prezimeEdit""/></td></tr>";
                 page += @"<tr><td>JMBG:</td><td><input type=""text"" value=""" + m.JMBG + @""" id=""jmbgEdit""/></td></tr>";

@@ -133,12 +133,29 @@ namespace TaxiSluzbaWebApi.Controllers
             return Request.CreateResponse(HttpStatusCode.OK);
         }
         [HttpGet]
-        [Route("Voznja/{korisnickoIme}")]
-        public HttpResponseMessage Voznja(string korisnickoIme)
+        [Route("Voznja")]
+        public HttpResponseMessage Voznja()
         {
-            //var jsonObj = JToken.Parse(Request.RequestUri.ToString().Split('?').Last());
-            //var korisnickoIme = jsonObj.Value<string>("KorisnickoIme");
-            var informations = "";
+            var jToken = JToken.Parse(Request.RequestUri.ToString().Split('?').Last());
+            var korisnickoIme = jToken.Value<string>("KorisnickoIme");
+            var xKordinata = jToken.Value<double>("XKordinata");
+            var yKordinata = jToken.Value<double>("YKordinata");
+            Int32.TryParse(jToken.Value<string>("TipAutomobila"), out int tip);
+            var TipVozila = Models.Enum.TipAutomobila.BezNaznake;
+
+            if (tip == 1)
+            {
+                TipVozila = Models.Enum.TipAutomobila.Putnicki;
+            }
+            else if (tip == 2)
+            {
+                TipVozila = Models.Enum.TipAutomobila.Kombi;
+            }
+            else
+            {
+                TipVozila = Models.Enum.TipAutomobila.BezNaznake;
+            }
+
             var response = new HttpResponseMessage();
             if (korisnickoIme == null)
             {
@@ -173,30 +190,28 @@ namespace TaxiSluzbaWebApi.Controllers
             {
                 if (ulogovani.Find(u => u.KorisnickoIme.Equals(item.KorisnickoIme)) != null)
                 {
-                    if (!item.Zauzet)
+                    if (!item.Zauzet && (item.Automobil.TipAutomobila == TipVozila || TipVozila == Models.Enum.TipAutomobila.BezNaznake))
                     {
                         listaSlobodnihVozaca.Add(item);
                     }
                 }
             }
 
-            informations = @"<table><tr><td>Ulica:</td><td><input type=""text"" id=""ulica"" placeholder=""npr.Bulevar Oslobodjenja"" autocomplete=""off"" /></td></tr>";
-            informations += @"<tr><td>Broj kuce/zgrade:</td><td><input type=""text"" id = ""brojKuce"" placeholder=""npr.147"" autocomplete=""off"" /></td></tr>";
-            informations += @"<tr><td>Naseljeno mesto:</td><td><input type=""text"" id=""mesto"" placeholder=""npr.Novi Sad"" autocomplete=""off"" /></td></tr>";
-            informations += @"<tr><td>Postanski broj:</td><td><input type=""text"" id=""pozivniBroj"" placeholder=""npr.21000"" autocomplete=""off"" /></td></tr>";
-            informations += @"<tr><td>Zeljeni tip vozila:</td><td><select id=""tip""><option value=""0"">-</option><option value=""1"">Putnicki</option><option value=""2"">Kombi</option></select></td></tr>";
-            informations += @"<tr><td>Korisnicko ime vozaca:</td><td><select id=""vozac"">";
             foreach (var v in listaSlobodnihVozaca)
             {
-                informations += String.Format(@"<option val=""{0}"">{1}</option>", v.KorisnickoIme, v.KorisnickoIme);
+                v.Distanca = Math.Pow((v.Lokacija.X - xKordinata), 2) + Math.Pow((v.Lokacija.Y - yKordinata), 2);
             }
-            informations += String.Format(@"</select></td></tr>");
-            informations += @"<tr><td></td><td><button id=""kreirajVoznjuD"">Kreiraj voznju</ button></td></tr></table>";
-            informations += @"<div id=""regVal""></div>";
-
-            response.Content = new StringContent(informations);
-            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-            return response;
+            listaSlobodnihVozaca = listaSlobodnihVozaca.OrderBy(v => v.Distanca).ToList();
+            var result = new List<Vozac>();
+            for (int i = 0; i < 5; i++)
+            {
+                if (i + 1 > listaSlobodnihVozaca.Count)
+                {
+                    break;
+                }
+                result.Add(listaSlobodnihVozaca.ElementAt(i));
+            }
+            return Request.CreateResponse(HttpStatusCode.OK,result);
         }
         [HttpPost]
         [Route("KreirajVoznju")]
@@ -207,10 +222,11 @@ namespace TaxiSluzbaWebApi.Controllers
             var Ulica = jToken.Value<string>("Ulica");
             var Broj = jToken.Value<string>("Broj");
             var PozivniBroj = jToken.Value<string>("PozivniBroj");
-            var KorisnickoImeV = jToken.Value<string>("KorisnickoImeV");
-            var TipVozila = (Models.Enum.TipAutomobila)System.Enum.Parse(typeof(Models.Enum.TipAutomobila),jToken.Value<string>("TipVozila"));
+            var xKordinata = jToken.Value<double>("XKordinata");
+            var yKordinata = jToken.Value<double>("YKordinata");
             var vozac = jToken.Value<string>("Vozac");
             var response = new HttpResponseMessage();
+            var TipVozila = Models.Enum.TipAutomobila.BezNaznake;
             Int32.TryParse(jToken.Value<string>("TipVozila"), out int t);
             if (t == 1)
             {
@@ -226,12 +242,12 @@ namespace TaxiSluzbaWebApi.Controllers
                 return Request.CreateResponse(HttpStatusCode.Unauthorized);
             }
 
-            if (Mesto == null || Ulica == null || Broj == null || PozivniBroj == null || KorisnickoImeV == null || vozac == null)
+            if (Mesto == null || Ulica == null || Broj == null || PozivniBroj == null || vozac == null)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
-            if (Mesto == "" || Ulica == "" || Broj == "" || PozivniBroj == "" || KorisnickoImeV == "" || vozac == "")
+            if (Mesto == "" || Ulica == "" || Broj == "" || PozivniBroj == "" || vozac == "")
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest);
             }
@@ -318,14 +334,18 @@ namespace TaxiSluzbaWebApi.Controllers
             {
                 ID = BazaPodataka.Instanca.Voznje.Count(),
                 DatumVremePoruzbine = DateTime.Now,
-                Lokacija = new Lokacija()
-            };
-            novaVoznja.Lokacija.Adresa = new Adresa
-            {
-                Broj = Broj,
-                NasenjenoMesto = Mesto,
-                PozivniBroj = PozivniBroj,
-                Ulica = Ulica
+                Lokacija = new Lokacija
+                {
+                    X = xKordinata,
+                    Y = yKordinata,
+                    Adresa = new Adresa
+                    {
+                        Broj = Broj,
+                        NasenjenoMesto = Mesto,
+                        PozivniBroj = PozivniBroj,
+                        Ulica = Ulica
+                    }
+                }
             };
             BazaPodataka.Instanca.Vozaci.Remove(vozacTemp);
             vozacTemp.Zauzet = true;
@@ -338,7 +358,7 @@ namespace TaxiSluzbaWebApi.Controllers
             novaVoznja.Vozac = new Vozac();
             novaVoznja.Vozac = vozacTemp;
             BazaPodataka.Instanca.Voznje.Add(novaVoznja);
-
+            BazaPodataka.Instanca.UpisiUBazuVoznje();
             return Request.CreateResponse(HttpStatusCode.OK);
         }
         [HttpGet]
@@ -546,6 +566,7 @@ namespace TaxiSluzbaWebApi.Controllers
                 return response;
             }
             informations += @"<div class=""filt""><select id=""tipFiltera"">";
+            informations += @"<option value="""""">-</option>";
             informations += @"<option value=""Kreirana"">Kreirana</option>";
             informations += @"<option value=""Formirana"">Formirana</option>";
             informations += @"<option value=""Obradjena"">Obradjena</option>";
@@ -553,8 +574,21 @@ namespace TaxiSluzbaWebApi.Controllers
             informations += @"<option value=""Otkazana"">Otkazana</option>";
             informations += @"<option value=""Neuspesna"">Neuspesna</option>";
             informations += @"<option value=""Uspesna"">Uspesna</option>";
-            informations += @"</select><button id=""filtriraj"">Filter</button>";
-            informations += @"<button id=""sortirajDatum"">Sortiraj po datumu</button></div>";
+            informations += @"</select><button id=""filtriraj"" value=""1"">Filter</button>";
+            informations += @"<input type=""checkbox"" id=""sortirajDatum""/>Sortiraj po datumu</br>";
+            informations += @"<input type=""checkbox"" id=""sortirajOcenu""/>Sortiraj po oceni</br>";
+            informations += @"</br><label>Pretraga po oceni(od-do):</label></br>";
+            informations += @"<label for=""od"">0 &nbsp;&nbsp;&nbsp;&nbsp;1 &nbsp;&nbsp;&nbsp;&nbsp;2 &nbsp;&nbsp;&nbsp;&nbsp;3 &nbsp;&nbsp;&nbsp;&nbsp;4 &nbsp;&nbsp;&nbsp;&nbsp;5</label></br><input type=""range"" multiple id=""od"" min=""0"" max=""5"" value=""0"">";
+            informations += @"</br><label for=""do"">0 &nbsp;&nbsp;&nbsp;&nbsp;1 &nbsp;&nbsp;&nbsp;&nbsp;2 &nbsp;&nbsp;&nbsp;&nbsp;3 &nbsp;&nbsp;&nbsp;&nbsp;4 &nbsp;&nbsp;&nbsp;&nbsp;5</label></br><input type=""range"" multiple id=""do"" min=""0"" max=""5"" value=""5"">";
+            informations += @"</br><label style=""font-size: 15px !important;"" for=""odCena"">0 &nbsp;&nbsp;&nbsp;100 &nbsp;&nbsp;&nbsp;200 &nbsp;&nbsp;&nbsp;300 &nbsp;&nbsp;&nbsp;400 &nbsp;&nbsp;&nbsp;500 ;&nbsp;&nbsp;&nbsp;600 &nbsp;&nbsp;&nbsp;&nbsp;700 &nbsp;&nbsp;&nbsp;&nbsp;800 &nbsp;&nbsp;&nbsp;&nbsp;900 &nbsp;&nbsp;&nbsp;&nbsp;1000+</label></br><input type=""range"" style=""width: 400px"" multiple id=""odCena"" min=""0"" max=""1000"" step=""100""value=""0"">";
+            informations += @"</br><label style=""font-size: 15px !important;"" for=""doCena"">0 &nbsp;&nbsp;&nbsp;100 &nbsp;&nbsp;&nbsp;200 &nbsp;&nbsp;&nbsp;300 &nbsp;&nbsp;&nbsp;400 &nbsp;&nbsp;&nbsp;500 ;&nbsp;&nbsp;&nbsp;600 &nbsp;&nbsp;&nbsp;&nbsp;700 &nbsp;&nbsp;&nbsp;&nbsp;800 &nbsp;&nbsp;&nbsp;&nbsp;900 &nbsp;&nbsp;&nbsp;&nbsp;1000+</label></br><input type=""range"" style=""width: 400px"" multiple id=""doCena"" min=""0"" max=""1000"" step=""100"" value=""1000"">";
+            informations += @"</br><label for=""datuOd"">Datum od:</label></br><input type=""date"" id=""odDatum"">";
+            informations += @"</br><label for=""datuDo"">Datum do:</label></br><input type=""date"" id=""doDatum"">";
+            informations += @"<div id=""filterError""></div></div>";
+            informations += @"<div></br><input type=""text"" id=""musterijaIme"" placeholder=""Pretrazi po imenu musterije""/>";
+            informations += @"</br><input type=""text"" id=""musterijaPrezime"" placeholder=""Pretrazi po prezimenu musterije""/>";
+            informations += @"</br><input type=""text"" id=""vozacIme"" placeholder=""Pretrazi po imenu vozaca""/>";
+            informations += @"</br><input type=""text"" id=""vozacPrezime"" placeholder=""Pretrazi po prezimenu vozaca""/></div>";
             foreach (var item in BazaPodataka.Instanca.Voznje)
             {
                 informations += "<table>";
@@ -611,6 +645,75 @@ namespace TaxiSluzbaWebApi.Controllers
             //HttpContext.Current.Session["ulogovan"] = v;
             //HttpContext.Current.Application["ulogovan"] = new Vozac();                      
             return response;
+        }
+        [HttpGet]
+        [Route("Blok")]
+        public HttpResponseMessage Blok()
+        {
+            var lista = new List<User>();
+            foreach (var item in BazaPodataka.Instanca.Vozaci)
+            {
+                lista.Add((User)item);
+            }
+            foreach (var item in BazaPodataka.Instanca.Musterije)
+            {
+                lista.Add((User)item);
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, lista);
+        }
+        [HttpPut]
+        [Route("Blok/{korisnickoIme}")]
+        public HttpResponseMessage Blok(string korisnickoIme)
+        {
+            var korisnikM = BazaPodataka.Instanca.NadjiMusteriju(korisnickoIme);
+            var korisnikV = BazaPodataka.Instanca.NadjiVozaca(korisnickoIme);
+            var ulogovani = (List<User>)HttpContext.Current.Application["ulogovani"];
+            if (korisnikM == null && korisnikV == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Los zahvtev");
+            }
+            else if(korisnikV != null)
+            {
+                BazaPodataka.Instanca.Vozaci.Remove(korisnikV);
+                if (korisnikV.Blokiran)
+                {
+                    korisnikV.Blokiran = false;
+                    BazaPodataka.Instanca.Vozaci.Add(korisnikV);
+                    BazaPodataka.Instanca.UpisiUBazuVozace();
+                    return Request.CreateResponse(HttpStatusCode.OK, "Uspesno odblokiran korisnik!");
+                }
+                else
+                {
+                    ulogovani.Remove(ulogovani.Find(u => u.KorisnickoIme.Equals(korisnikV)));
+                    HttpContext.Current.Application["ulogovani"] = ulogovani;
+                    korisnikV.Blokiran = true;
+                    BazaPodataka.Instanca.Vozaci.Add(korisnikV);
+                    BazaPodataka.Instanca.UpisiUBazuVozace();
+                    return Request.CreateResponse(HttpStatusCode.OK, "Uspesno blokiran korisnik!");
+                }              
+               
+            }
+            else
+            {
+                BazaPodataka.Instanca.Musterije.Remove(korisnikM);
+                if (korisnikM.Blokiran)
+                {
+                    korisnikM.Blokiran = false;
+                    BazaPodataka.Instanca.Musterije.Add(korisnikM);
+                    BazaPodataka.Instanca.UpisiUBazuMusterije();
+                    return Request.CreateResponse(HttpStatusCode.OK, "Uspesno odblokiran korisnik!");
+                }
+                else
+                {
+                    ulogovani.Remove(ulogovani.Find(u => u.KorisnickoIme.Equals(korisnikM)));
+                    HttpContext.Current.Application["ulogovani"] = ulogovani;
+                    korisnikM.Blokiran = true;
+                    BazaPodataka.Instanca.Musterije.Add(korisnikM);
+                    BazaPodataka.Instanca.UpisiUBazuMusterije();
+                    return Request.CreateResponse(HttpStatusCode.OK, "Uspesno blokiran korisnik!");
+                }
+               
+            }
         }
     }
 }

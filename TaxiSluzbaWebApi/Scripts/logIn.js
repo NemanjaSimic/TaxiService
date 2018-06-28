@@ -57,7 +57,10 @@ function LogIn(user,refresh) {
                 PogresanUsername();
             } else if (data.status === 403) {
                 $('.mainView').html('<h1>Izlogujte se sa prijavljenog naloga!</h1>');
-            } else {
+            } else if (data.status === 405) {
+                $('.mainView').html('<h1>Korisnik blokiran!</h1>');
+            }
+            else {
                 $('.mainView').html('<h1>Greska na serveru!</h1>');
             }
         }

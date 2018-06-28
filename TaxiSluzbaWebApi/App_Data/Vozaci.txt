@@ -1,1 +1,1 @@
-SimkeSofer;a;Nemanja;Simic;Muski;2703996772010;0654591824;a;111111;2018;1111;Putnicki
+SimkeSofer;a;Nemanja;Simic;Muski;2703996772010;0654591824;a;111111;2018;1111;Putnicki;False

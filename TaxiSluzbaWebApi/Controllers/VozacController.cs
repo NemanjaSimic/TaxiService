@@ -14,23 +14,7 @@ namespace TaxiSluzbaWebApi.Controllers
     [RoutePrefix("api/Vozac")]
     public class VozacController : ApiController
     {
-        [HttpGet]
-        [Route("Lokacija")]
-        public HttpResponseMessage Lokacija()
-        {
-            var response = new HttpResponseMessage();
-            var page = "";
-            page += @"<input type=""text"" id=""ulica"" placeholder=""Ulica"" autocomplete=""off"" /><br />";
-            page += @"<input type=""text"" id=""brojKuce"" placeholder=""Broj kuce"" autocomplete=""off"" /><br />";
-            page += @"<input type=""text"" id=""mesto"" placeholder=""Naseljeno mesto"" autocomplete=""off"" /><br />";
-            page += @"<input type=""text"" id=""pozivniBroj"" placeholder=""Postasnki broj"" autocomplete=""off"" /><br />";
-            page += @"<button id=""promeniLokaciju"">Promeni lokaciju</button>";
-            page += @"<div id=""regVal""></div>";
-            response.Content = new StringContent(page);
-            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-            response.StatusCode = HttpStatusCode.OK;
-            return response;
-        }
+        
         [HttpPut]
         [Route("PromenaLokacije")]
         public HttpResponseMessage PromenaLokacije([FromBody]JToken jToken)
@@ -40,6 +24,8 @@ namespace TaxiSluzbaWebApi.Controllers
             var Ulica = jToken.Value<string>("Ulica");
             var Broj = jToken.Value<string>("BrojKuce");
             var PozivniBroj = jToken.Value<string>("PozivniBroj");
+            var xKordinata = jToken.Value<double>("XKordinata");
+            var yKordinata = jToken.Value<double>("YKordinata");
             var response = new HttpResponseMessage();
 
             if (Mesto == null || Ulica == null || Broj == null || PozivniBroj == null || korisnickoIme == null)
@@ -88,25 +74,34 @@ namespace TaxiSluzbaWebApi.Controllers
                 response.StatusCode = HttpStatusCode.Forbidden;
                 return response;
             }
-            else
-            {
-                BazaPodataka.Instanca.Vozaci.Remove(vozac);
-                vozac.Lokacija = new Lokacija
-                {
-                    Adresa = new Adresa()
-                };
-                vozac.Lokacija.Adresa.Ulica = Ulica;
-                vozac.Lokacija.Adresa.Broj = Broj;
-                vozac.Lokacija.Adresa.NasenjenoMesto = Mesto;
-                vozac.Lokacija.Adresa.PozivniBroj = PozivniBroj;
-                BazaPodataka.Instanca.Vozaci.Add(vozac);
-                BazaPodataka.Instanca.UpisiUBazuVozace();
 
-                response.Content = new StringContent("Uspesno sacuvana promena");
+            if (vozac.Blokiran)
+            {
+                response.Content = new StringContent("Korisnik blokiran!");
                 response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
-                response.StatusCode = HttpStatusCode.OK;
+                response.StatusCode = HttpStatusCode.Forbidden;
                 return response;
             }
+
+            BazaPodataka.Instanca.Vozaci.Remove(vozac);
+            vozac.Lokacija = new Lokacija
+            {
+                Adresa = new Adresa()
+            };
+            vozac.Lokacija.Adresa.Ulica = Ulica;
+            vozac.Lokacija.Adresa.Broj = Broj;
+            vozac.Lokacija.Adresa.NasenjenoMesto = Mesto;
+            vozac.Lokacija.X = xKordinata;
+            vozac.Lokacija.Y = yKordinata;
+            vozac.Lokacija.Adresa.PozivniBroj = PozivniBroj;
+            BazaPodataka.Instanca.Vozaci.Add(vozac);
+            BazaPodataka.Instanca.UpisiUBazuVozace();
+
+            response.Content = new StringContent("Uspesno sacuvana promena");
+            response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+            response.StatusCode = HttpStatusCode.OK;
+            return response;
+
         }
         [HttpPost]
         [Route("Komentarisi")]
@@ -117,7 +112,8 @@ namespace TaxiSluzbaWebApi.Controllers
             Int32.TryParse(jToken.Value<string>("Ocena"), out int ocena);
             Int32.TryParse(jToken.Value<string>("ID"), out int id);
             var response = new HttpResponseMessage();
-
+            komentar = komentar.Replace(';', '.');
+            komentar = komentar.Replace('\n', ' ');
             if (korisnickoIme == null || komentar == null)
             {
                 response.Content = new StringContent("Los zahtev!");
@@ -165,7 +161,7 @@ namespace TaxiSluzbaWebApi.Controllers
             vozac.Zauzet = false;
             vozac.Komentarisao = true;
             BazaPodataka.Instanca.Vozaci.Add(vozac);
-
+            BazaPodataka.Instanca.UpisiUBazuVozace();
             var kom = new Komentar()
             {
                 Opis = komentar,
@@ -216,6 +212,13 @@ namespace TaxiSluzbaWebApi.Controllers
                 response.Content = new StringContent("<h1>Greska na serveru!</h1>");
                 response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
                 response.StatusCode = HttpStatusCode.OK;
+                return response;
+            }
+            if (vozac.Blokiran)
+            {
+                response.Content = new StringContent("Korisnik blokiran!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
                 return response;
             }
 
@@ -296,6 +299,7 @@ namespace TaxiSluzbaWebApi.Controllers
                 return response;
             }
 
+
             var voznja = BazaPodataka.Instanca.Voznje.Find(v => v.ID == id);
 
             if (voznja == null)
@@ -347,8 +351,9 @@ namespace TaxiSluzbaWebApi.Controllers
                 }
                 BazaPodataka.Instanca.Vozaci.Remove(vozac);
                 vozac.Zauzet = false;
+                vozac.Komentarisao = true;
                 BazaPodataka.Instanca.Vozaci.Add(vozac);
-                
+                BazaPodataka.Instanca.UpisiUBazuVozace();
                 BazaPodataka.Instanca.Voznje.Remove(voznja);
                 voznja.Odrediste = new Lokacija
                 {
@@ -395,8 +400,10 @@ namespace TaxiSluzbaWebApi.Controllers
                 BazaPodataka.Instanca.Voznje.Add(voznja);
                 BazaPodataka.Instanca.UpisiUBazuVoznje();
                 BazaPodataka.Instanca.Vozaci.Remove(vozac);
-                vozac.Zauzet = false;
+                vozac.Zauzet = true;
+                vozac.Komentarisao = false;
                 BazaPodataka.Instanca.Vozaci.Add(vozac);
+                BazaPodataka.Instanca.UpisiUBazuVozace();
                 var page = "";
                 page += @"<div class=""commentSection"">";
                 page += @"<h2>Komentar je obavezan</h2></br>";
@@ -414,7 +421,6 @@ namespace TaxiSluzbaWebApi.Controllers
                 return response;
             }
         }
-
         [HttpGet]
         [Route("Obradi")]
         public HttpResponseMessage Obradi()
@@ -442,6 +448,15 @@ namespace TaxiSluzbaWebApi.Controllers
             }
 
             var vozac = BazaPodataka.Instanca.NadjiVozaca(korisnickoIme);
+
+            if (vozac.Blokiran)
+            {
+                response.Content = new StringContent("Korisnik blokiran!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+
             if (vozac.Komentarisao)
             {
                 var listaVoznji = new List<Voznja>();
@@ -458,6 +473,7 @@ namespace TaxiSluzbaWebApi.Controllers
                 }
                 else
                 {
+                    informations += @"<div><button id=""sortVozac"">Sortiraj po udaljenosti</button></div>";
                     foreach (var item in listaVoznji)
                     {
                         if ((item.TipAutomobila != Models.Enum.TipAutomobila.BezNaznake && item.TipAutomobila == vozac.Automobil.TipAutomobila) || item.TipAutomobila == Models.Enum.TipAutomobila.BezNaznake)
@@ -483,7 +499,6 @@ namespace TaxiSluzbaWebApi.Controllers
                 return response;
             }
         }
-
         [HttpPut]
         [Route("Obradi")]
         public HttpResponseMessage Obradi([FromBody]JToken jToken)
@@ -582,10 +597,93 @@ namespace TaxiSluzbaWebApi.Controllers
             voznjaTemp.Vozac = new Vozac();
             voznjaTemp.Vozac = vozacTemp;
             BazaPodataka.Instanca.Voznje.Add(voznjaTemp);
-
+            BazaPodataka.Instanca.UpisiUBazuVozace();
             response.Content = new StringContent("Voznja je uspesno prihvacena!");
             response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
             return response;
+        }
+
+        [HttpGet]
+        [Route("Sort")]
+        public HttpResponseMessage Sort()
+        {
+            var jsonObj = JToken.Parse(Request.RequestUri.ToString().Split('?').Last());
+            var korisnickoIme = jsonObj.Value<string>("KorisnickoIme");
+            var response = new HttpResponseMessage();
+            var informations = "";
+
+            var ulogovani = (List<User>)HttpContext.Current.Application["ulogovani"];
+            if (ulogovani == null)
+            {
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+            else if (ulogovani.Find(u => u.KorisnickoIme.Equals(korisnickoIme)) == null)
+            {
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+            else if (ulogovani.Find(u => u.KorisnickoIme.Equals(korisnickoIme)).Uloga != Models.Enum.Uloga.Vozac)
+            {
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+
+            var vozac = BazaPodataka.Instanca.NadjiVozaca(korisnickoIme);
+
+            if (vozac.Blokiran)
+            {
+                response.Content = new StringContent("Korisnik blokiran!");
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                response.StatusCode = HttpStatusCode.Forbidden;
+                return response;
+            }
+
+            if (vozac.Komentarisao)
+            {
+                var listaVoznji = new List<Voznja>();
+                foreach (var item in BazaPodataka.Instanca.Voznje)
+                {
+                    if (item.StatusVoznje == Models.Enum.StatusVoznje.Kreirana)
+                    {
+                        listaVoznji.Add(item);
+                    }
+                }
+                if (listaVoznji.Count == 0)
+                {
+                    informations += "<h1>NEMA ZAHTEVA ZA VOZNJU!</h1>";
+                }
+                else
+                {
+                    foreach (var item in listaVoznji)
+                    {
+                        item.Distanca = Math.Pow((item.Lokacija.X - vozac.Lokacija.X), 2) + Math.Pow((item.Lokacija.Y - vozac.Lokacija.Y), 2);
+                    }
+                    listaVoznji = listaVoznji.OrderBy(v => v.Distanca).ToList();
+                    foreach (var item in listaVoznji)
+                    {
+                        if ((item.TipAutomobila != Models.Enum.TipAutomobila.BezNaznake && item.TipAutomobila == vozac.Automobil.TipAutomobila) || item.TipAutomobila == Models.Enum.TipAutomobila.BezNaznake)
+                        {
+                            informations += String.Format(@"<table><tr><td>Ulica:</td><td>{0}</td></tr>", item.Lokacija.Adresa.Ulica);
+                            informations += String.Format(@"<tr><td>Broj:</td><td>{0}</td></tr>", item.Lokacija.Adresa.Broj);
+                            informations += String.Format(@"<tr><td>Mesto:</td><td>{0}</td></tr>", item.Lokacija.Adresa.NasenjenoMesto);
+                            informations += String.Format(@"<tr><td>Pozivni broj:</td><td>{0}</td></tr>", item.Lokacija.Adresa.PozivniBroj);
+                            informations += String.Format(@"<tr><td></td><td><button class=""obradiV"" value=""{0}"">Obradi voznju</button></td></tr>", item.ID);
+                            informations += "</table>";
+                        }
+                    }
+                }
+                response.Content = new StringContent(informations);
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                return response;
+            }
+            else
+            {
+                informations += "<h1>Zavrsite sa komentarisanjem predhodne voznje!</h1>";
+                response.Content = new StringContent(informations);
+                response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
+                return response;
+            }
         }
     }    
 }

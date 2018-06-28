@@ -11,6 +11,8 @@ namespace TaxiSluzbaWebApi.Models
         public Automobil Automobil { get; set; }
         public bool Zauzet { get; set; } = false;
         public bool Komentarisao { get; set; } = true;
+        public bool Blokiran { get; set; } = false;
+        public double Distanca { get; set; } = 0;
         public Vozac()
         {
             Uloga = Enum.Uloga.Vozac;

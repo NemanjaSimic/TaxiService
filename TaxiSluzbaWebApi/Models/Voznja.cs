@@ -18,6 +18,7 @@ namespace TaxiSluzbaWebApi.Models
         public int Iznos { get; set; }
         public Komentar Komentar { get; set; }
         public Enum.StatusVoznje StatusVoznje { get; set; }
+        public double Distanca { get; set; } = 0;
         public Voznja()
         {
             Lokacija = new Lokacija();

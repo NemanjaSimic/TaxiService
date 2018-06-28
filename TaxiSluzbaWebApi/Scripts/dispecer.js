@@ -185,13 +185,44 @@ $(document).off('click', '#buttonRegistracijaVozaca').on('click', '#buttonRegist
     }
 });
 
-$(document).on('click', '#formirajVoznju', function () {
-    var korisnikJSON = sessionStorage.getItem('korisnik');
-    var korisnik = $.parseJSON(korisnikJSON);
-
+$(document).on('click', '#blok', function () {
     $.ajax({
         type: 'GET',
-        url: 'api/Dispecer/Voznja/' + korisnik.KorisnickoIme,
+        url: 'api/Dispecer/Blok',
+        //data: JSON.stringify(korisnik),
+        //contentType: 'application/json; charset=utf-8',
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                var lista = JSON.parse(data.responseText);
+                $('.mainView').html("");
+                $('.mainView').append('<table>');
+                for (var i = 0; i < lista.length; i++) {
+                    $('.mainView').append('<tr>');
+                    $('.mainView').append(`<td>${lista[i].KorisnickoIme}</td>`);
+                    if (lista[i].Blokiran === false) {
+                        $('.mainView').append(`<td><button class="blokiraj" value="${lista[i].KorisnickoIme}">Blokiraj</button></td>`);
+                    } else {
+                        $('.mainView').append(`<td><button class="blokiraj" value="${lista[i].KorisnickoIme}">Odblokiraj</button></td>`);
+                    }
+                   
+                    $('.mainView').append('</tr>');
+                }
+                $('.mainView').append('</table>');
+            } else {
+                $('.mainView').html("");
+                $('.mainView').append("<h1>Greska na serveru!</h1>");
+            }
+        }
+    });
+});
+
+$(document).off('click', '.blokiraj').on('click', '.blokiraj', function () {
+    var korisnickoIme = `${$(this).val()}`;
+
+    $.ajax({
+        type: 'PUT',
+        url: 'api/Dispecer/Blok/'+ korisnickoIme,
         //data: JSON.stringify(korisnik),
         //contentType: 'application/json; charset=utf-8',
         dataType: 'html',
@@ -201,10 +232,73 @@ $(document).on('click', '#formirajVoznju', function () {
                 $('.mainView').append(data.responseText);
             } else {
                 $('.mainView').html("");
-                $('.mainView').append("<h1>" + data.responseText+"</h1 > ");
+                $('.mainView').append("<h1>" + data.responseText + "</h1 > ");
             }
         }
     });
+
+});
+$(document).on('click', '#formirajVoznju', function () {
+    var korisnikJSON = sessionStorage.getItem('korisnik');
+    var korisnik = $.parseJSON(korisnikJSON);
+
+    var page = '<div id="selekcija"></div>';
+    page += '<div><label>Ulica:</label><input type="text" id="ulica" readonly/></div><br />';
+    page += '<div><label>Broj kuce:</label><input type="text" id="brojKuce" readonly  /></div><br />';
+    page += '<div><label>Mesto:</label><input type="text" id="mesto" readonly /></div><br />';
+    page += '<div><label>Pozivni broj</label><input type="text" id="pozivniBroj" readonly /></div><br />';
+    page += '<div><label>X Kordinata:</label><input type="text" id="xKordinata" readonly /></div><br />';
+    page += '<div><label>Y Kordinata:</label><input type="text" id="yKordinata" readonly /></div><br />';
+    page += '<div>Zeljeni tip vozila:</td><td><select id="tip"><option value="0">-</option><option value="1">Putnicki</option><option value="2">Kombi</option></select></div>';
+    page += '<div><button id="potvrdiLokaciju">Potvrdi lokaciju</button></div>';
+    page += '<div><button id="kreirajVoznjuD">Kreiraj voznju</button></div>';
+    page += '<div id="regVal"></div>';
+    page += '<div id="map"></map>';
+    $('.mainView').html(page);
+    $('#map').show();
+    $('#potvrdiLokaciju').attr('disabled', true);
+    $('#kreirajVoznjuD').attr('disabled', true);
+    $.ajax({
+        url: "Scripts/maps.js",
+        dataType: "script"
+    }).done(function () {
+        myMap();
+    });   
+});
+
+$(document).off('click', '#potvrdiLokaciju').on('click', '#potvrdiLokaciju', function () {
+    var korisnikJSON = sessionStorage.getItem('korisnik');
+    korisnik = $.parseJSON(korisnikJSON);
+
+    let data = {
+        XKordinata: `${$('#xKordinata').val()}`,
+        YKordinata: `${$('#yKordinata').val()}`,
+        KorisnickoIme: korisnik.KorisnickoIme,
+        TipAutomobila: `${$('#tip').val()}`
+    };
+
+    $.ajax({
+        type: 'GET',
+        url: 'api/Dispecer/Voznja',
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'html',
+        complete: function (data) {
+            if (data.status === 200) {
+                var lista = JSON.parse(data.responseText);
+                var page = '<div><select id="vozac">';
+                for (var i = 0; i < lista.length; i++) {
+                    page += `<option value="${lista[i].KorisnickoIme}">${lista[i].KorisnickoIme}</option>`;
+                }
+                page += '</select></div>';
+                $('#selekcija').html(page);
+            } else {
+                $('.mainView').html("");
+                $('.mainView').append("<h1>" + data.responseText + "</h1 > ");
+            }
+        }
+    });
+    
 });
 
 $(document).off('click', '#kreirajVoznjuD').on('click', '#kreirajVoznjuD', function () {
@@ -264,6 +358,8 @@ $(document).off('click', '#kreirajVoznjuD').on('click', '#kreirajVoznjuD', funct
             KorisnickoImeV: `${$('#korisnickoImeV').val()}`,
             TipVozila: `${$('#tip').val()}`,
             Vozac: `${$('#vozac').val()}`,
+            XKordinata: `${$('#xKordinata').val()}`,
+            YKordinata: `${$('#yKordinata').val()}`,
             KorisnickoIme: korisnik.KorisnickoIme
         };
 
@@ -275,8 +371,7 @@ $(document).off('click', '#kreirajVoznjuD').on('click', '#kreirajVoznjuD', funct
             dataType: 'json',
             complete: function (data) {
                if (data.status === 200) {
-                    $('#regVal').append('<label>Voznja uspeno kreirana</label><br/>');
-                    IsprazniFormu();
+                    $('.mainView').append('<h1>Voznja uspeno kreirana</h1>');
                } else {
                    $('#regVal').append('<label>' + data.responseText + '</label > <br />');
                 }

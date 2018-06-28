@@ -8,3 +8,15 @@
 26-Jun-18 22:31:10;testOtkaz;1;NS;21000;BezNaznake;Nile;;;;;;;0;Otkazana;26-Jun-18 22:37:42;Nile;;2;
 26-Jun-18 22:37:57;fesdfsdc;2;fsafsdfsdafds;1234;BezNaznake;Nile;;;;;;;0;Otkazana;26-Jun-18 22:42:42;Nile;123;1;
 26-Jun-18 20:35:08;dadsa;1;dasd;1234;BezNaznake;Nile;;;;;nina;SimkeSofer;0;Neuspesna;26-Jun-18 22:03:18;Nile;Guzac moj najpametniji!;5;
+28-Jun-18 03:02:53;Narodnog fronta ;34; Novi Sad ;21102;BezNaznake;;;;;;nina;SimkeSofer;0;Neuspesna;28-Jun-18 03:03:33;SimkeSofer;dada;1;
+28-Jun-18 03:43:16;Boška Buhe ;8; Novi Sad ;21000;BezNaznake;Nile;;;;;;;0;Otkazana;28-Jun-18 05:17:41;Nile;Nina. Banana. Vole. Se .;5;
+28-Jun-18 03:50:04;Vojvođanska ;1; Novi Sad ;21000;BezNaznake;Nile;;;;;;;0;Otkazana;28-Jun-18 03:50:31;Nile;gjh;1;
+28-Jun-18 04:20:33;Narodnog fronta ;12; Novi Sad ;21102;BezNaznake;Nile;;;;;;;0;Otkazana;28-Jun-18 05:06:09;Nile;da;1;
+28-Jun-18 04:20:40;Ćirila i Metodija ;7; Novi Sad ;21000;BezNaznake;Nile;;;;;;;0;Otkazana;28-Jun-18 05:06:17;Nile;dasd;1;
+28-Jun-18 04:30:16;Ticanova ;28; Novi Sad ;21124;BezNaznake;Nile;;;;;;;0;Otkazana;28-Jun-18 05:06:22;Nile;das;1;
+28-Jun-18 04:36:46;Janka Veselinovića ;14; Novi Sad ;21000;BezNaznake;Nile;;;;;;;0;Otkazana;28-Jun-18 05:06:30;Nile;dasd;1;
+28-Jun-18 04:41:57;Futoška ;16; Novi Sad ;21000;BezNaznake;Nile;;;;;;;0;Otkazana;28-Jun-18 05:06:35;Nile;dad;1;
+28-Jun-18 04:49:39;Jirečekova ;11; Novi Sad ;21102;BezNaznake;Nile;;;;;;;0;Otkazana;28-Jun-18 05:06:39;Nile;dsadas;1;
+28-Jun-18 05:07:01;Narodnog fronta ;23; Novi Sad ;21000;BezNaznake;Nile;;;;;;;0;Kreirana;;;;;
+28-Jun-18 05:08:29;Teodora Pavlovića ;23; Novi Sad ;403824;BezNaznake;Nile;;;;;;;0;Kreirana;;;;;
+28-Jun-18 05:06:51;Ćirila i Metodija ;31; Novi Sad ;21102;BezNaznake;Nile;;;;;;SimkeSofer;0;Neuspesna;28-Jun-18 05:12:46;SimkeSofer;da;1;

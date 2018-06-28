@@ -14,7 +14,7 @@
                 $('.mainView').append(data.responseText);                       
             } else {
                 $('.mainView').html("");
-                $('.mainView').append("<h1>GRESKA NA SERVERU!</h1>");
+                $('.mainView').append("<h1>" + data.responseText + "</h1>");
             }
         }
     });
@@ -40,7 +40,7 @@ $(document).on('click', '#edit', function () {
                 $('.mainView').append(data.responseText);
             } else {
                 $('.mainView').html("");
-                $('.mainView').append("<h1>GRESKA NA SERVERU!</h1>");
+                $('.mainView').append("<h1>" + data.responseText + "</h1 > ");
             }
         }
     });
@@ -55,6 +55,8 @@ $(document).on('click', '#change', function () {
             if (data.status === 200) {
                 $('.mainView').html("");
                 $('.mainView').append(data.responseText);
+            } else if (data.status === 403) {
+                $('.mainView').html("Korisnik je blokiran!");
             } else {
                 $('.mainView').html("");
                 $('.mainView').append("<h1>GRESKA NA SERVERU!</h1>");
@@ -168,6 +170,8 @@ $(document).off('click', '#buttonEdit').on('click', '#buttonEdit', function () {
             error: function (data) {
                 if (data.status === 409) {
                     $('#regValEdit').append('<label>Korisnicko ime je zauzeto!</label><br/>');
+                } else if (data.status === 403) {
+                    $('.mainView').html("Korisnik je blokiran!");
                 }
             }
         });
@@ -219,10 +223,15 @@ $(document).off('click','#promeniSifru').on('click', '#promeniSifru', function (
                 $('#regValEditS').append('<label>Sifra uspesno promenjena!</label><br/>');
                 sessionStorage.setItem('korisnik', JSON.stringify(data));
             },
-            error: function (data) {            
-                    $('#regValEditS').append('<label>Neko je cackao skriptu!</label><br/>');              
+            error: function (data) {  
+                if (data.status === 403) {
+                    $('.mainView').html("Korisnik je blokiran!");
+                } else {
+                    $('#regValEditS').append('<label>Greska na serveru!</label><br/>');              
+                }
             }
         });
     }
 
 });
+

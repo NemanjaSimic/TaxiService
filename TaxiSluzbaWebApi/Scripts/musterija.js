@@ -3,14 +3,25 @@ korisnik = $.parseJSON(korisnikJSON);
 
 $(document).on('click', '#request', function () {
     $('.mainView').html("");
-    let informations = '<table><tr><td>Ulica:</td><td><input type="text" id="ulica" placeholder="npr.Bulevar Oslobodjenja" autocomplete="off" /></td></tr>';
-    informations += '<tr><td>Broj kuce/zgrade:</td><td><input type="text" id="brojKuce" placeholder="npr.147" autocomplete="off" /></td></tr>';
-    informations += '<tr><td>Naseljeno mesto:</td><td><input type="text" id="mesto" placeholder="npr.Novi Sad" autocomplete="off" /></td></tr>';
-    informations += '<tr><td>Postanski broj:</td><td><input type="text" id="pozivniBroj" placeholder="npr.21000" autocomplete="off" /></td></tr>';
+    let informations = '<table><tr><td>Ulica:</td><td><input type="text" id="ulica" readonly /></td></tr>';
+    informations += '<tr><td>Broj kuce/zgrade:</td><td><input type="text" id="brojKuce" readonly /></td></tr>';
+    informations += '<tr><td>Naseljeno mesto:</td><td><input type="text" id="mesto" readonly /></td></tr>';
+    informations += '<tr><td>Postanski broj:</td><td><input type="text" id="pozivniBroj" readonly /></td></tr>';
+    informations += '<tr><td><label>X Kordinata:</td><td><input type="text" id="xKordinata" readonly /></td></tr>';
+    informations += '<tr><td><label>Y Kordinata:</td><td><input type="text" id="yKordinata" readonly /></td></tr>';
     informations += '<tr><td>Zeljeni tip vozila:</td><td><select id="tip"><option value="0">-</option><option value="1">Putnicki</option><option value="2">Kombi</option></select></td></tr>';
-    informations += '<tr><td></td><td><button id="kreirajVoznju">Posalji zahtev za voznju</ button></td></tr></table>';
+    informations += '<tr><td></td><td><button id="kreirajVoznju">Posalji zahtev za voznju</button></td></tr></table>';
     informations += '<div id="regVal"></div>';
+    informations += '<div id="map"></div>';
     $('.mainView').html(informations);
+    $('#map').show();
+    $('#kreirajVoznju').attr('disabled', true);
+    $.ajax({
+        url: "Scripts/maps.js",
+        dataType: "script"
+    }).done(function () {
+        myMap();
+    });   
 });
 
 let IsprazniFormuMV = function () {
@@ -18,6 +29,8 @@ let IsprazniFormuMV = function () {
     $('#brojKuce').val("");
     $('#mesto').val("");
     $('#pozivniBroj').val("");
+    $('#xKordinata').val("");
+    $('#yKordinata').val("");
 };
 $(document).off('click', '#kreirajVoznju').on('click', '#kreirajVoznju', function () {
     var retVal = true;
@@ -67,6 +80,8 @@ $(document).off('click', '#kreirajVoznju').on('click', '#kreirajVoznju', functio
             Ulica: `${$('#ulica').val()}`,
             Broj: `${$('#brojKuce').val()}`,
             PozivniBroj: `${$('#pozivniBroj').val()}`,
+            XKordinata: `${$('#xKordinata').val()}`,
+            YKordinata: `${$('#yKordinata').val()}`,
             Mesto: `${$('#mesto').val()}`,
             TipVozila: `${$('#tip').val()}`,
             KorisnickoIme: korisnik.KorisnickoIme
@@ -107,6 +122,7 @@ $(document).on('click', '#otkaziVoznju', function () {
             if (data.status === 200) {
                 $('.mainView').html(data.responseText);
                 $(':button').not('#komentarisiVoznju :button').attr('disabled', true);
+                $('#komentarisiVoznju').attr('disabled', false);
             } else if (data.status === 409) {
                 $('.mainView').html('<label>Voznja je prihvacena u medjuvremenu!</label><br/>');  
             } else if (data.status === 401) {
