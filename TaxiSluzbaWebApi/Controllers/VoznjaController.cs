@@ -272,7 +272,7 @@ namespace TaxiSluzbaWebApi.Controllers
                     {
                         foreach (var item in filtrirane)
                         {
-                            informations += "<table>";
+                            informations += @"<div class=""voznje""><table>";
                             if ((item.Vozac != null && item.Vozac.KorisnickoIme != null))
                             {
                                 if (item.Vozac.KorisnickoIme.Equals(korisnickoIme))
@@ -308,7 +308,7 @@ namespace TaxiSluzbaWebApi.Controllers
                                         informations += String.Format(@"<tr><td>Ocena:</td><td>{0}</td></tr>", item.Komentar.Ocena.ToString());
                                         informations += String.Format(@"<tr><td>Datum komentara:</td><td>{0}</td></tr>", item.Komentar.DatumObjave.ToString());
                                     }
-                                    informations += "</table>";
+                                    informations += "</table></div>";
 
                                 }
 
@@ -423,7 +423,7 @@ namespace TaxiSluzbaWebApi.Controllers
             {                               
                 foreach (var item in filtrirane)
                 {
-                    informations += "<table>";
+                    informations += @"<div class=""voznje""><table>";
                     if ((item.Musterija != null && item.Musterija.KorisnickoIme != null))
                     {
                         if (item.Musterija.KorisnickoIme.Equals(korisnickoIme))
@@ -482,7 +482,7 @@ namespace TaxiSluzbaWebApi.Controllers
                                     informations += @"<option value=""5"">5</option></select></td></tr>";
                                     informations += String.Format(@"<tr><td></td><td><button id=""komentarisiVoznju"" value=""{0}"">Ostavi komentar</button></td></tr>", item.ID);
                                 }
-                                informations += "</table>";
+                                informations += "</table></div>";
                             }
                         }
                     }
@@ -585,7 +585,7 @@ namespace TaxiSluzbaWebApi.Controllers
                         
                         foreach (var item in BazaPodataka.Instanca.Voznje)
                         {
-                            informations += "<table>";
+                            informations += @"<div class=""voznje""><table>";
                             if ((item.Vozac != null && item.Vozac.KorisnickoIme != null))
                             {
                                 if (item.Vozac.KorisnickoIme.Equals(korisnickoIme))
@@ -621,7 +621,7 @@ namespace TaxiSluzbaWebApi.Controllers
                                         informations += String.Format(@"<tr><td>Ocena:</td><td>{0}</td></tr>", item.Komentar.Ocena.ToString());
                                         informations += String.Format(@"<tr><td>Datum komentara:</td><td>{0}</td></tr>", item.Komentar.DatumObjave.ToString());
                                     }
-                                    informations += "</table>";
+                                    informations += "</table><div>";
 
                                 }
 
@@ -645,7 +645,7 @@ namespace TaxiSluzbaWebApi.Controllers
                     informations += @"</br><input type=""text"" id=""vozacPrezime"" placeholder=""Pretrazi po prezimenu vozaca""/></div>";
                     foreach (var item in BazaPodataka.Instanca.Voznje)
                     {
-                        informations += "<table>";
+                        informations += @"<div class=""voznje""><table>";
                         if ((item.Dispecer != null && item.Dispecer.KorisnickoIme != null))
                         {
                             if (item.Dispecer.KorisnickoIme.Equals(korisnickoIme))
@@ -678,7 +678,7 @@ namespace TaxiSluzbaWebApi.Controllers
                                     informations += String.Format(@"<tr><td>Ocena:</td><td>{0}</td></tr>", item.Komentar.Ocena.ToString());
                                     informations += String.Format(@"<tr><td>Datum komentara:</td><td>{0}</td></tr>", item.Komentar.DatumObjave.ToString());
                                 }
-                                informations += "</table>";
+                                informations += "</table></div>";
                             }
                         }
                     }
@@ -696,7 +696,7 @@ namespace TaxiSluzbaWebApi.Controllers
             {              
                 foreach (var item in BazaPodataka.Instanca.Voznje)
                 {
-                    informations += "<table>";
+                    informations += @"<div class=""voznje""><table>";
                     if ((item.Musterija != null && item.Musterija.KorisnickoIme != null))
                     {
                         if (item.Musterija.KorisnickoIme.Equals(korisnickoIme))
@@ -755,7 +755,7 @@ namespace TaxiSluzbaWebApi.Controllers
                                     informations += @"<option value=""5"">5</option></select></td></tr>";
                                     informations += String.Format(@"<tr><td></td><td><button id=""komentarisiVoznju"" value=""{0}"">Ostavi komentar</button></td></tr>", item.ID);
                                 }
-                                informations += "</table>";
+                                informations += "</table></div>";
                             }
                         }
                     }

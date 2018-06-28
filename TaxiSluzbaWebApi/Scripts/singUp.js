@@ -63,11 +63,11 @@
             $('#regVal').append('<label>Polje email je obavezno!</label><br/>');
         } else {
             let emailinput = $('#email').val();
-            let pattern = /^\b\[a-zA-Z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b$/i;
-            //if (!pattern.test(emailinput)) {
-            //    retVal = false;
-            //    $('#regVal').append('<label>Forma email-a nije validna !</label><br/>');
-            //}
+            let pattern = /^\b[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i;
+            if (!pattern.test(emailinput)) {
+                retVal = false;
+                $('#regVal').append('<label>Forma email-a nije validna !</label><br/>');
+            }
         }
         if ($('#brojTelefona').val() === "") {
             retVal = false;

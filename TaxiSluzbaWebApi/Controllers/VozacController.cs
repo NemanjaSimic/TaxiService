@@ -241,6 +241,7 @@ namespace TaxiSluzbaWebApi.Controllers
                         informations += String.Format(@"<tr><td></td><td><button id=""promeniStatus"" value=""{0}"">Sacuvaj</button></td></tr>", item.ID);
                         informations += "</table>";
                         informations += @"<div id=""regVal""></div>";
+                        informations += @"<div id=""map""></div>";
                         response.Content = new StringContent(informations);
                         response.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/html");
                         response.StatusCode = HttpStatusCode.OK;

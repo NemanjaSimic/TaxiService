@@ -3,10 +3,10 @@ korisnik = $.parseJSON(korisnikJSON);
 
 $(document).on('click', '#request', function () {
     $('.mainView').html("");
-    let informations = '<table><tr><td>Ulica:</td><td><input type="text" id="ulica" readonly /></td></tr>';
-    informations += '<tr><td>Broj kuce/zgrade:</td><td><input type="text" id="brojKuce" readonly /></td></tr>';
-    informations += '<tr><td>Naseljeno mesto:</td><td><input type="text" id="mesto" readonly /></td></tr>';
-    informations += '<tr><td>Postanski broj:</td><td><input type="text" id="pozivniBroj" readonly /></td></tr>';
+    let informations = '<table><tr><td>Ulica:</td><td><input type="text" id="ulica"  /></td></tr>';
+    informations += '<tr><td>Broj kuce/zgrade:</td><td><input type="text" id="brojKuce"  /></td></tr>';
+    informations += '<tr><td>Naseljeno mesto:</td><td><input type="text" id="mesto"  /></td></tr>';
+    informations += '<tr><td>Postanski broj:</td><td><input type="text" id="pozivniBroj"  /></td></tr>';
     informations += '<tr><td><label>X Kordinata:</td><td><input type="text" id="xKordinata" readonly /></td></tr>';
     informations += '<tr><td><label>Y Kordinata:</td><td><input type="text" id="yKordinata" readonly /></td></tr>';
     informations += '<tr><td>Zeljeni tip vozila:</td><td><select id="tip"><option value="0">-</option><option value="1">Putnicki</option><option value="2">Kombi</option></select></td></tr>';

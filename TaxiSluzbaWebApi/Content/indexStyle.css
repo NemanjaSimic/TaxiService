@@ -5,9 +5,13 @@
     height: 100%;
     background-color: powderblue;
     grid-template-columns: auto auto;
-    grid-template-rows: 1fr 10fr 1fr;
+    grid-template-rows: auto 5fr auto;
     grid-template-areas: "header header" "mainView mainView" "footer footer";
     background: #2B4B6F;
+}
+
+.voznje {
+    height: 200px;
 }
 
 .mainView{
@@ -15,6 +19,10 @@
     display: grid;
     grid-template-columns: auto auto;
     grid-template-areas: "logIn register";
+}
+.mainView > div {
+    text-align: center;
+    padding: 5px 0;
 }
 
 .logIn {
@@ -34,10 +42,12 @@
 .header {
     grid-area: header;
     background: #6587AD;
-    display: grid;
-    grid-template-columns: auto auto auto auto auto auto auto;
-    grid-template-areas: "view edit change create changeR createR logout";
+    display: flex;
 }
+
+/*header > button {
+
+}*/
 
 .footer {
     grid-area: footer;
@@ -120,7 +130,6 @@ table{
 
 #map {
     height: 100%;
-    display : none;
 }
 
 html, body {

@@ -126,7 +126,13 @@ namespace TaxiSluzbaWebApi.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.Conflict);
             }
-
+            foreach (var item in BazaPodataka.Instanca.Vozaci)
+            {
+                if (auto.BrojTaksiVozila.Equals(item.Automobil.BrojTaksiVozila))
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest,"ID taksi vozila je zauzet");
+                }
+            }
 
             BazaPodataka.Instanca.Vozaci.Add(noviVozac);
             BazaPodataka.Instanca.UpisiUBazuVozace();

@@ -325,4 +325,5 @@ $(document).off('click', '#promeniLokaciju').on('click', '#promeniLokaciju', fun
             }
         });
     }
- });
+});
+

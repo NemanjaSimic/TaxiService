@@ -1,1 +1,7 @@
-SimkeSofer;a;Nemanja;Simic;Muski;2703996772010;0654591824;a;111111;2018;1111;Putnicki;False
+vozac4;ftn;vozac4ime;vozac4prezime;Muski;5419687523541;0648531223;vozac4@gmail.com;777333;2016;1110;Putnicki;False
+vozac6;ftn;vozac6ime;vozac6prezime;Zenski;5124785632145;0651527966;vozac6@gmail.com;000333;2018;1112;Putnicki;False
+vozac2;ftn;vozac2ime;vozac2prezime;Zenski;2547812536214;0625487521;vozac2@gmail.com;998554;2010;2541;Kombi;False
+vozac3;ftn;vozac3ime;vozac3prezime;Muski;5412578963214;0632541888;vozac3@gmail.com;115220;2012;9999;Kombi;False
+vozac7;ftn;vozac7ime;vozac7prezime;Muski;2547896532145;0684581245;vozac7@gmail.com;557889;2017;1113;Putnicki;False
+vozac5;ftn;vozac5ime;vozac5prezime;Muski;3256987458888;0635455981;vozac5@gmail.com;123321;2008;1111;Putnicki;False
+vozac1;ftn;vozac1ime;vozac1prezime;Muski;1234567896541;060000333;vozac1@gmail.com;333666;2015;4215;Putnicki;False

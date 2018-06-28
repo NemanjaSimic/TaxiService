@@ -1,2 +1,3 @@
-Novi;a;Novi;Novi;Muski;1235478569854;0321548574;novi;False
-Nile;a;Nile;Simic;Muski;2703996772010;0654591824;nikisa@gmail.com;False
+musterija1;ftn;musterija1ime;musterija1prezime;Muski;1234567891234;0623158954;musterija1@gmail.com;False
+musterija2;ftn;musterija2ime;musterija2prezime;Zenski;1234567891234;0654591824;musterija2@gmail.com;False
+musterija3;ftn;musterija3ime;musterija3prezime;Muski;9876543210321;0632211445;musterija3@gmail.com;False

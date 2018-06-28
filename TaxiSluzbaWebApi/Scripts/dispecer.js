@@ -14,10 +14,6 @@
     form += '<input type="text" id="registracijaAutomobila" placeholder="Registarska oznaka vozila" autocomplete="off" /> <br />';
     form += '<input type="text" id="idTaxi" placeholder="ID taxi vozila" autocomplete="off" /> <br />';
     form += '<select id="tip"><option value="1">Putnicki</option><option value="2">Kombi</option></select><br />';
-    //form += '<input type="text" id="ulica" placeholder="Ulica" autocomplete="off" /> <br />';
-    //form += '<input type="text" id="brojKuce" placeholder="Broj kuce" autocomplete="off" /> <br />';
-    //form += '<input type="text" id="mesto" placeholder="Naseljeno mesto" autocomplete="off" /> <br />';
-    //form += '<input type="text" id="pozivniBroj" placeholder="Postasnki broj" autocomplete="off" /> <br />';
     form += '<button id="buttonRegistracijaVozaca">Registruj se</button>';
     form += '<div id="regVal"></div></div>';
     $('.mainView').html(form);
@@ -89,11 +85,11 @@ $(document).off('click', '#buttonRegistracijaVozaca').on('click', '#buttonRegist
         $('#regVal').append('<label>Polje email je obavezno!</label><br/>');
     } else {
         let emailinput = $('#email').val();
-        let pattern = /^\b\[a-zA-Z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b$/i;
-        //if (!pattern.test(emailinput)) {
-        //    retVal = false;
-        //    $('#regVal').append('<label>Forma email-a nije validna !</label><br/>');
-        //}
+        let pattern = /^\b[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i;
+        if (!pattern.test(emailinput)) {
+            retVal = false;
+            $('#regVal').append('<label>Forma email-a nije validna !</label><br/>');
+        }
     }
     if ($('#brojTelefona').val() === "") {
         retVal = false;
@@ -244,11 +240,11 @@ $(document).on('click', '#formirajVoznju', function () {
 
     var page = '<div id="selekcija"></div>';
     page += '<div><label>Ulica:</label><input type="text" id="ulica" readonly/></div><br />';
-    page += '<div><label>Broj kuce:</label><input type="text" id="brojKuce" readonly  /></div><br />';
+    page += '<div><label>Broj kuce:</label><input type="text" id="brojKuce"   /></div><br />';
     page += '<div><label>Mesto:</label><input type="text" id="mesto" readonly /></div><br />';
-    page += '<div><label>Pozivni broj</label><input type="text" id="pozivniBroj" readonly /></div><br />';
-    page += '<div><label>X Kordinata:</label><input type="text" id="xKordinata" readonly /></div><br />';
-    page += '<div><label>Y Kordinata:</label><input type="text" id="yKordinata" readonly /></div><br />';
+    page += '<div><label>Pozivni broj</label><input type="text" id="pozivniBroj"  /></div><br />';
+    page += '<div><label>X Kordinata:</label><input type="text" id="xKordinata"  /></div><br />';
+    page += '<div><label>Y Kordinata:</label><input type="text" id="yKordinata"  /></div><br />';
     page += '<div>Zeljeni tip vozila:</td><td><select id="tip"><option value="0">-</option><option value="1">Putnicki</option><option value="2">Kombi</option></select></div>';
     page += '<div><button id="potvrdiLokaciju">Potvrdi lokaciju</button></div>';
     page += '<div><button id="kreirajVoznjuD">Kreiraj voznju</button></div>';
